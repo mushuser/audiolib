@@ -21,7 +21,9 @@ function batch_work() {
   if(code == "completed") {
     var uri = r.output[0].uri
     var filename = uri.match(/([^\/]+mp3)/g)[0]
-    var id = upload(uri, filename)
+    var id = drive_upload(uri, filename)
+    
+    Logger.log(id)
   } else {
     
   }
@@ -78,7 +80,7 @@ function set_new_folder(new_folder_id, child_id) {
   return folder
 }
 
-function upload(uri, filename) {  
+function drive_upload(uri, filename) {  
   var blob = UrlFetchApp.fetch(uri).getBlob();
   var file = DriveApp.createFile(blob)
   file.setName(filename)

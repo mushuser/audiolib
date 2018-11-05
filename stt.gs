@@ -2,16 +2,14 @@ var STT_BASE_URL = "https://speech.googleapis.com/"
 
 function xx() {
   var mp3_id = "1EkcXAa_iTcsV7L2MiQBM2g7m5qF3I6F1"
-  var r = longrunningrecognize(mp3_id)
+  var r = sst_longrunningrecognize(mp3_id)
   
   Logger.log(r)
 }
 
-function longrunningrecognize(mp3_id) {
-  var uri = "https://drive.google.com/uc?export=download&id=" + mp3_id
-  
+function sst_longrunningrecognize(uri) {
   var headers = {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json"
   }
 
   var payload = {
@@ -35,9 +33,8 @@ function longrunningrecognize(mp3_id) {
   var url = STT_BASE_URL + "/v1/speech:longrunningrecognize?key=" + secret.google_api_key
       
   var r = httplib.httpretry(url, options)
-  Logger.log(r)
   var j = JSON.parse(r)
-  Logger.log(j)
-  return j
   
+//  Logger.log(j)
+  return j  
 }
