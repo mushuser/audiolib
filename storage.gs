@@ -1,62 +1,35 @@
 var GS_BASE_URL = "https://www.googleapis.com/upload/storage/v1"
-var MIME_MP3 = "audio/mp3"
+var MIME_FLAC = "audio/flac"
+var BUCKET_NAME = "audiolib-storage"
 
-function xxg() {
-  var a = get_accesstoken(secret.audiolib_client_id, secret.audiolib_client_secret, secret.audiolib_refresh_token)
-  Logger.log(a)
-  return 
-  var file_id = "1yh8uDEGzeZus-YBal2pWBYSQSRXcbR6M"
-  var bucket_name = "audiolib-production"
-  drive_to_gs(file_id, bucket_name)
-}
 
-function drive_to_gs(file_id, bucket_name) {  
-  var file = DriveApp.getFileById(file_id)
-  var filename = file.getName()
-  var bytes = file.getBlob().getBytes()
-  
-  var uri = GS_BASE_URL + "/b/" + bucket_name + "/o?uploadType=media&name=" + filename + "&key=" + secret.google_api_key
-  
+function uri_to_gs(uri) {  
+  var filename = uri.match(/([^\/]+$)/g)[0]
+  var r = httplib.httpretry(uri)
+  var bytes = r.getBlob().getBytes()  
+  var gs_uri = GS_BASE_URL + "/b/" + BUCKET_NAME + "/o?uploadType=media&name=" + filename
+
   var headers = {
-    "x-goog-project-id": "58736245657"
-  }
-
-  var payload = {
+    "Authorization":authlib.get_g_bearerauth()
   }  
-  
+
   var options = {
     "payload":bytes,
-//    "headers":headers,
-    "contentType":MIME_MP3,
+    "headers":headers,
+    "contentType":MIME_FLAC,
     "contentLength":bytes.length,
     "muteHttpExceptions": false    
   }
 
-  var r = httplib.httpretry(uri, options)
+  var r = httplib.httpretry(gs_uri, options)
   var j = JSON.parse(r)
   
-  Logger.log(j)  
+  return j
 }
 
 
-function get_accesstoken(client_id, client_secret, refresh_token) {
-  var url = "https://www.googleapis.com/oauth2/v4/token"
-
-  var payload = {
-    "client_id":client_id,
-    "client_secret":client_secret,
-    "refresh_token":refresh_token,
-    "grant_type": refresh_token
-  }
+function get_gs_uri(json) {
+  var gs_uri = "gs://" + json.bucket + "/" + json.name
   
-  var options = {
-    "payload":payload  
-  }
-
-  var r = httplib.httpretry(url, options)
-  var j = JSON.parse(r)
-  
-  Logger.log(j)
-  
-  return j
+  return gs_uri
 }

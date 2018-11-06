@@ -1,15 +1,29 @@
 var STT_BASE_URL = "https://speech.googleapis.com/"
+var STT_MAX_SIZE = 51000*60*60 // flac 51000bytes/second, 60minutes for 175M
 
-function xx() {
-  var mp3_id = "1EkcXAa_iTcsV7L2MiQBM2g7m5qF3I6F1"
-  var r = sst_longrunningrecognize(mp3_id)
-  
-  Logger.log(r)
+
+function polling_stt_work(name) { 
+  while(true) {
+    Utilities.sleep(15*1000) 
+    
+    var status = get_status(name)
+    var done = status.done
+    if(done) {
+      var results = status.response.results
+      
+      return results
+    } 
+  }  
 }
 
+
 function sst_longrunningrecognize(uri) {
+  var access_token = authlib.g_get_accesstoken()
+  var bearauth = authlib.get_bearerauth(access_token)
+  
   var headers = {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Authorization": bearauth,
   }
 
   var payload = {
@@ -18,7 +32,8 @@ function sst_longrunningrecognize(uri) {
     },
     "config": {
       "enableAutomaticPunctuation": true,
-      "encoding": "LINEAR16",
+      "encoding": CONVERSION_TARGET.toUpperCase(),
+      //      "sampleRateHertz":44100, //wma:22050
       "languageCode": "cmn-Hant-TW",
       "model": "default"
     }
@@ -30,11 +45,45 @@ function sst_longrunningrecognize(uri) {
     "muteHttpExceptions": false    
   }
   
-  var url = STT_BASE_URL + "/v1/speech:longrunningrecognize?key=" + secret.google_api_key
-      
+  var url = STT_BASE_URL + "/v1/speech:longrunningrecognize"    
   var r = httplib.httpretry(url, options)
   var j = JSON.parse(r)
   
-//  Logger.log(j)
   return j  
+}
+
+
+function get_status(name) {
+  var url = "https://speech.googleapis.com/v1/operations/" + name
+
+  var access_token = authlib.g_get_accesstoken()
+  var bearauth = authlib.get_bearerauth(access_token)
+  
+  var headers = {
+    "Content-Type": "application/json",
+    "Authorization": bearauth
+  }
+
+  var options = {
+    "headers":headers,
+    "muteHttpExceptions": false    
+  }
+  
+  var r = httplib.httpretry(url, options)
+  var j = JSON.parse(r)
+  
+  return j
+}
+
+
+function get_lines(results) {
+  var lines = ""
+  
+  for(var i in results) {
+    var result = results[i]
+    var transcript = result.alternatives[0].transcript  
+    var lines = lines + transcript + "\n"
+  }
+  
+  return lines
 }
