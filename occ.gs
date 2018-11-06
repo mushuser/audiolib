@@ -118,15 +118,15 @@ function reached_daily_max(key) {
     var jobs = JSON.parse(t)  
   }
 
-  var total_minutes = 0
+  var key_minutes = 0
   
   for(var i in jobs) {
     var job = jobs[i]
     
-    total_minutes = total_minutes + job.conversion_minutes
+    key_minutes = key_minutes + job.conversion_minutes
   }
 
-  if(total_minutes >= MAX_DAILY) {
+  if(key_minutes >= MAX_DAILY) {
     return true  
   } else {
     return false  
@@ -144,43 +144,33 @@ function get_api_status(key) {
   }
    
   var r = httplib.httpretry(url, options)
-//  var j = JSON.parse(r)
 
   return r
 }
 
 
-function doGet(e) {
-  var name = e.parameter.name
-  var dir = e.parameter.dir
-  var data = redditlib.get_parent(name)
-  var age = redditlib.get_age(data.created_utc)
-  var title = data.title.slice(0,15)
-  var logged_user = e.parameter.logged_user
+function all_api_status() {
+  var total_minutes = 0
+  
+  for(var i in secret.occ_keys) {
+    var key = secret.occ_keys[i]
 
-  var obj = {
-    "name":name,
-    "dir":dir,
-    "age":age,
-    "title":title,
-    "voter":redditlib.voter_obj.voter,
-    "logged_user":logged_user    
+    var t = get_api_status(key)
+    var key_minutes = 0
+    
+    if(t == "") {
+      key_minutes = 0
+    } else {
+      var jobs = JSON.parse(t)  
+      
+      for(var i2 in jobs) {
+        var job = jobs[i2]
+        key_minutes = key_minutes + parseInt(job.conversion_minutes)
+      }    
+    } 
+    total_minutes = total_minutes + key_minutes
+    console.log("%d:%s:%d:%d", parseInt(i) + 1, key, key_minutes, 30-key_minutes) 
   }
   
-  if(obj["logged_user"] == creds_main.username) {
-    redditlib.set_arg_queue(obj)
-    console.log("received:%s", obj)
-    
-    var ret_obj = obj
-  } else {
-    var msg = "not from main user, skipped:" + JSON.stringify(obj)
-    console.log(msg)
-    
-    var ret_obj = {
-      "result":msg
-    }
-  }
-  
-  var json_text = ContentService.createTextOutput(JSON.stringify(ret_obj)).setMimeType(ContentService.MimeType.JSON); 
-  return json_text
-}
+  console.log("%d keys, available minutes: %d", secret.occ_keys.length, secret.occ_keys.length * 30 - total_minutes) 
+}  

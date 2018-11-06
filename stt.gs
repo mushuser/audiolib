@@ -31,7 +31,7 @@ function sst_longrunningrecognize(uri) {
       "uri": uri
     },
     "config": {
-      "enableAutomaticPunctuation": true,
+      "enableAutomaticPunctuation": false,
       "encoding": CONVERSION_TARGET.toUpperCase(),
       //      "sampleRateHertz":44100, //wma:22050
       "languageCode": "cmn-Hant-TW",
@@ -81,8 +81,15 @@ function get_lines(results) {
   
   for(var i in results) {
     var result = results[i]
-    var transcript = result.alternatives[0].transcript  
-    var lines = lines + transcript + "\n"
+    var alternatives = result.alternatives
+    if(alternatives) {
+      var transcript = alternatives[0].transcript  
+      var lines = lines + transcript + "\n"
+    }
+  }
+  
+  if(lines.length == 0) {
+    lines = "(無STT內容)"  
   }
   
   return lines
