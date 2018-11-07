@@ -25,8 +25,8 @@ function stt_works(occ_outputs, files) {
 
     var line = get_line(stt)
     result_lines.push(line)
-    
-    httplib.printc("[%s] %s", gs_filename, line) 
+    console.log("[%s] %s", gs_filename, line)
+//    httplib.printc("[%s] %s", gs_filename, line) 
 
     var file = files[i]
     file.setDescription(line)

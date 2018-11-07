@@ -35,7 +35,7 @@ function polling_occ_work(job_id, files) {
       var outputs = []
       for(var i in r.output) {
         var output = r.output[i]
-        httplib.printc("polling_occ_work(): %s", output)
+        httplib.printc("polling_occ_work(): %s", JSON.stringify(output))
         
         var size = output.size
         
