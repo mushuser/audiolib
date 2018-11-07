@@ -1,5 +1,4 @@
 //note: keys reborn at 8am
-
 var MAX_DAILY = 30
 var OCC_BASE_URL = "https://api2.online-convert.com"
 var CONVERSION_TARGET = "flac"
@@ -36,6 +35,8 @@ function polling_occ_work(job_id, files) {
       var outputs = []
       for(var i in r.output) {
         var output = r.output[i]
+        httplib.printc("polling_occ_work(): %s", output)
+        
         var size = output.size
         
         if(size >= STT_MAX_SIZE) {
@@ -70,7 +71,14 @@ function query_work(job_id) {
 
 function get_config_payload(source_ids) {
   var inputs = []
-  var conversions = []
+
+  var conversion = {
+    "target": CONVERSION_TARGET,
+    "options": {
+      "channels": "mono",
+      "allow_multiple_outputs":true
+    }
+  }
   
   for(var i in source_ids) {
     var source = "https://drive.google.com/uc?export=download&id=" + source_ids[i]
@@ -79,16 +87,6 @@ function get_config_payload(source_ids) {
       "source": source}
     
     inputs.push(input)
-    
-    var conversion = {
-      "target": CONVERSION_TARGET,
-      "options": {
-        "channels": "mono",
-        "allow_multiple_outputs":true
-      }
-    }
-    
-    conversions.push(conversion)    
   }
   
   var payload = {
@@ -102,17 +100,15 @@ function get_config_payload(source_ids) {
 
 function occ_works(source_ids, files) {
   var work = send_occ_work(source_ids)
-//  httplib.printl(work)
   var id = work.id
-//  httplib.printl(id)
   var outputs = polling_occ_work(id, files)
   
   return outputs
 }
 
+
 function send_occ_work(source_ids) {
   var payload = get_config_payload(source_ids)  
-//  httplib.printl(payload)
 
   var options = {
     "payload": JSON.stringify(payload),
@@ -127,32 +123,8 @@ function send_occ_work(source_ids) {
 }
 
 
-function set_new_folder(new_folder_id, child_id) {
-  var old_folder = DriveApp.getFolderById("root")
-  var child = DriveApp.getFileById(child_id)
-  old_folder.removeFile(child)
-  
-  var new_folder = DriveApp.getFolderById(new_folder_id)
-  var folder = new_folder.addFile(child)
-  
-  return folder
-}
-
-
-function drive_upload(uri, filename) {  
-  var blob = UrlFetchApp.fetch(uri).getBlob();
-  var file = DriveApp.createFile(blob)
-  file.setName(filename)
-  
-  var id = file.getId()
-  set_new_folder(secret.mp3_folder_id, id)
-
-  return id
-}
-
-
 function reached_daily_max(key) {
-  var t = get_api_status(key)
+  var t = get_key_status(key)
   
   if(t == "") {
     return false
@@ -176,7 +148,7 @@ function reached_daily_max(key) {
 }
 
 
-function get_api_status(key) {
+function get_key_status(key) {
   var date_str = Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd")
   var url = OCC_BASE_URL + "/stats/day/" + date_str + "/single"
   
@@ -191,13 +163,13 @@ function get_api_status(key) {
 }
 
 
-function get_keys_status() {
+function get_available_minutes() {
   var total_minutes = 0
   
   for(var i in secret.occ_keys) {
     var key = secret.occ_keys[i]
 
-    var t = get_api_status(key)
+    var t = get_key_status(key)
     var key_minutes = 0
 
     if(t == "") {
@@ -211,24 +183,10 @@ function get_keys_status() {
       }    
     } 
     total_minutes = total_minutes + key_minutes
-    var msg = Utilities.formatString("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, (30-key_minutes), key)
-    Logger.log(msg) 
+    httplib.printl("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, (30-key_minutes), key)
   }
   var available_minutes = secret.occ_keys.length * 30 - total_minutes
-  var msg = Utilities.formatString("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
-  Logger.log(msg)
+  httplib.printl("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
   
   return available_minutes
 }  
-
-
-function wma_size_to_seconds(size) {
-   // 2136 bytes for 1 second
-  return size / 2136
-}
-  
-
-function wma_size_to_minutes(size) {
-  return wma_size_to_seconds(size) / 60
-}
-  

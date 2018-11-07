@@ -47,9 +47,6 @@ function get_batch_ids(files) {
 
 
 function batch_works() {
-  var am = get_keys_status()
-  httplib.printc("before available minutes: %d", am)
-  
   if(update_occ_key()) {
     httplib.printc("api key: %s", headers["X-Oc-Api-Key"])
   } else {
@@ -63,13 +60,9 @@ function batch_works() {
   httplib.printc(ids)
   
   var occ_outputs = occ_works(ids, files)
-  httplib.printc(occ_outputs)
   
   var lines = stt_works(occ_outputs, files)
   httplib.printc(lines)
-
-  var am = get_keys_status()
-  httplib.printc("after available minutes: %d", am)
 }
 
 

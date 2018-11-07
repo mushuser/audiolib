@@ -13,7 +13,7 @@ function stt_works(occ_outputs, files) {
     }
     
     var uri = occ_output.uri
-    var gs = gs_load(uri)
+    var gs = gs_upload(uri)
     var gs_filename = gs.name
         
     var gs_uri = get_gs_uri(gs)    

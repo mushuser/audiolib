@@ -28,7 +28,8 @@ function remove_gs(filename) {
   }
 }
 
-function gs_load(uri) {  
+
+function gs_upload(uri) {  
   var filename = uri.match(/([^\/]+$)/g)[0]
   var r = httplib.httpretry(uri)
   var bytes = r.getBlob().getBytes()  
