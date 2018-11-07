@@ -26,15 +26,28 @@ function update_occ_key() {
 }
 
 
-function polling_occ_work(job_id) {
+function polling_occ_work(job_id, files) {
   while(true) {
     Utilities.sleep(1*1000) 
     var r = query_work(job_id)
     var code = r.status.code
     
     if(code == "completed") {
-      var output = r.output[0]
-      return output
+      var outputs = []
+      for(var i in r.output) {
+        var output = r.output[i]
+        var size = output.size
+        
+        if(size >= STT_MAX_SIZE) {
+          var file = files[i]
+          move_oversized(file)
+          
+          outputs.push(undefined)          
+        } else {
+          outputs.push(output)          
+        }
+      }
+      return outputs
     } else {
       httplib.printc("polling_occ_work() status: %s", code)
     }
@@ -55,25 +68,52 @@ function query_work(job_id) {
 }
 
 
-function send_work(source_id) {
-  var source = "https://drive.google.com/uc?export=download&id=" + source_id
+function get_config_payload(source_ids) {
+  var inputs = []
+  var conversions = []
   
-  var input = [{
-    "type": "remote",
-    "source": source}]    
-  
-  var conversion = [{
-    "target": CONVERSION_TARGET,
-    "options": {
-      "channels": "mono"  
+  for(var i in source_ids) {
+    var source = "https://drive.google.com/uc?export=download&id=" + source_ids[i]
+    var input = {
+      "type": "remote",
+      "source": source}
+    
+    inputs.push(input)
+    
+    var conversion = {
+      "target": CONVERSION_TARGET,
+      "options": {
+        "channels": "mono",
+        "allow_multiple_outputs":true
+      }
     }
-  }]
-  
-  var payload = {
-    "input": (input),
-    "conversion": (conversion)
+    
+    conversions.push(conversion)    
   }
   
+  var payload = {
+    "input": (inputs),
+    "conversion": ([conversion])
+  }
+
+  return payload
+}
+
+
+function occ_works(source_ids, files) {
+  var work = send_occ_work(source_ids)
+//  httplib.printl(work)
+  var id = work.id
+//  httplib.printl(id)
+  var outputs = polling_occ_work(id, files)
+  
+  return outputs
+}
+
+function send_occ_work(source_ids) {
+  var payload = get_config_payload(source_ids)  
+//  httplib.printl(payload)
+
   var options = {
     "payload": JSON.stringify(payload),
     "headers": headers
@@ -151,7 +191,7 @@ function get_api_status(key) {
 }
 
 
-function all_api_status() {
+function get_keys_status() {
   var total_minutes = 0
   
   for(var i in secret.occ_keys) {
@@ -174,9 +214,11 @@ function all_api_status() {
     var msg = Utilities.formatString("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, (30-key_minutes), key)
     Logger.log(msg) 
   }
-  
-  var msg = Utilities.formatString("quota: %d, available: %d", (secret.occ_keys.length * 30), (secret.occ_keys.length * 30 - total_minutes))
+  var available_minutes = secret.occ_keys.length * 30 - total_minutes
+  var msg = Utilities.formatString("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
   Logger.log(msg)
+  
+  return available_minutes
 }  
 
 
