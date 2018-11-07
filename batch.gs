@@ -62,7 +62,7 @@ function batch_works() {
   var occ_outputs = occ_works(ids, files)
   
   var lines = stt_works(occ_outputs, files)
-  httplib.printc(lines)
+//  httplib.printc(lines)
 }
 
 

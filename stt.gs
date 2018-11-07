@@ -17,7 +17,7 @@ function stt_works(occ_outputs, files) {
     var gs_filename = gs.name
         
     var gs_uri = get_gs_uri(gs)    
-    httplib.printc("uri_to_gs(): %s", gs_uri)    
+//    httplib.printc("uri_to_gs(): %s", gs_uri)    
 
     var name = sst_longrunningrecognize(gs_uri).name
     var stt = polling_stt_work(name)
@@ -25,6 +25,8 @@ function stt_works(occ_outputs, files) {
 
     var line = get_line(stt)
     result_lines.push(line)
+    
+    httplib.printc("[%s] %s", gs_filename, line) 
 
     var file = files[i]
     file.setDescription(line)
