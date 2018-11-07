@@ -1,3 +1,5 @@
+//note: keys reborn at 8am
+
 var MAX_DAILY = 30
 var OCC_BASE_URL = "https://api2.online-convert.com"
 var CONVERSION_TARGET = "flac"
@@ -34,7 +36,7 @@ function polling_occ_work(job_id) {
       var output = r.output[0]
       return output
     } else {
-      console.log("polling_occ_work() status: %s", code)
+      httplib.printc("polling_occ_work() status: %s", code)
     }
   }  
 }
@@ -157,7 +159,7 @@ function all_api_status() {
 
     var t = get_api_status(key)
     var key_minutes = 0
-    
+
     if(t == "") {
       key_minutes = 0
     } else {
@@ -169,8 +171,22 @@ function all_api_status() {
       }    
     } 
     total_minutes = total_minutes + key_minutes
-    console.log("%d:%s:%d:%d", parseInt(i) + 1, key, key_minutes, 30-key_minutes) 
+    var msg = Utilities.formatString("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, (30-key_minutes), key)
+    Logger.log(msg) 
   }
   
-  console.log("%d keys, available minutes: %d", secret.occ_keys.length, secret.occ_keys.length * 30 - total_minutes) 
+  var msg = Utilities.formatString("quota: %d, available: %d", (secret.occ_keys.length * 30), (secret.occ_keys.length * 30 - total_minutes))
+  Logger.log(msg)
 }  
+
+
+function wma_size_to_seconds(size) {
+   // 2136 bytes for 1 second
+  return size / 2136
+}
+  
+
+function wma_size_to_minutes(size) {
+  return wma_size_to_seconds(size) / 60
+}
+  
