@@ -102,11 +102,13 @@ function get_config_payload(source_ids, target) {
 
 
 function occ_works(source_ids, files) {
-  var work = send_occ_work(source_ids)
-  var id = work.id
-  var outputs = polling_occ_work(id, files)
-  
-  return outputs
+  if(source_ids.length > 0) {
+    var work = send_occ_work(source_ids)
+    var id = work.id
+    var outputs = polling_occ_work(id, files)
+    
+    return outputs
+  }
 }
 
 
