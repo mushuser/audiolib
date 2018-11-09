@@ -56,6 +56,10 @@ function batch_works() {
   
   var files = get_batch_files()
   
+  if(files.length < 1) {    
+    return  
+  }
+  
   var ids = get_batch_ids(files)
   httplib.printc("ids: %s", ids)
   
