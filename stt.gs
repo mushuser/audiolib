@@ -72,7 +72,7 @@ function sst_longrunningrecognize(uri) {
     },
     "config": {
       "enableAutomaticPunctuation": false,
-      "encoding": CONVERSION_TARGET.toUpperCase(),
+      "encoding": DEFAULT_TARGET.toUpperCase(),
       //      "sampleRateHertz":44100, //wma:22050
       "languageCode": "cmn-Hant-TW",
       "model": "default"
