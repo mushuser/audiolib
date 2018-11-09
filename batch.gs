@@ -46,19 +46,19 @@ function get_batch_ids(files) {
 }
 
 
-function batch_works() {
-  if(update_occ_key()) {
-    httplib.printc("api key: %s", headers["X-Oc-Api-Key"])
-  } else {
-    httplib.printc("all keys not available")
-    return st_single_work.NO_KEY_AVAILABLE
-  }
-  
+function batch_works() { 
   var files = get_batch_files()
   
   if(files.length < 1) {    
     return  
   }
+
+  if(update_occ_key()) {
+    httplib.printc("api key: %s", headers["X-Oc-Api-Key"])
+  } else {
+    httplib.printc("all keys not available")
+    return st_single_work.NO_KEY_AVAILABLE
+  }  
   
   var ids = get_batch_ids(files)
   httplib.printc("ids: %s", ids)
