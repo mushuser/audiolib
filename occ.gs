@@ -1,7 +1,7 @@
 //note: keys reborn at 8am
 var MAX_DAILY = 30
 var OCC_BASE_URL = "https://api2.online-convert.com"
-var CONVERSION_TARGET = "flac"
+var DEFAULT_TARGET = "flac"
 var OCC_MAX_SIZE = 100*1024*1024 // 100M
 
 
@@ -35,12 +35,15 @@ function polling_occ_work(job_id, files) {
       var outputs = []
       for(var i in r.output) {
         var output = r.output[i]
-        httplib.printc("polling_occ_work(): %s", JSON.stringify(output))
+        var filename = files[i].getName()
+        httplib.printc("[%s] %s", filename, JSON.stringify(output))
         
         var size = output.size
         
-        if(size >= STT_MAX_SIZE) {
+        if(size >= STT_MEMORY_SIZE) {
           var file = files[i]
+          var filename = get_filename_gs(output.uri)
+          httplib.printc("polling_occ_work(): size over: %d, %s", size, filename)
           move_oversized(file)
           
           outputs.push(undefined)          
@@ -69,11 +72,11 @@ function query_work(job_id) {
 }
 
 
-function get_config_payload(source_ids) {
+function get_config_payload(source_ids, target) {
   var inputs = []
 
   var conversion = {
-    "target": CONVERSION_TARGET,
+    "target": (target == undefined)?DEFAULT_TARGET:target,
     "options": {
       "channels": "mono",
       "allow_multiple_outputs":true
@@ -122,7 +125,7 @@ function send_occ_work(source_ids) {
   return j
 }
 
-
+// unknown bug here
 function reached_daily_max(key) {
   var t = get_key_status(key)
   
@@ -183,10 +186,10 @@ function get_available_minutes() {
       }    
     } 
     total_minutes = total_minutes + key_minutes
-    httplib.printl("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, (30-key_minutes), key)
+    httplib.printc("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, (30-key_minutes), key)
   }
   var available_minutes = secret.occ_keys.length * 30 - total_minutes
-  httplib.printl("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
+  httplib.printc("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
   
   return available_minutes
 }  

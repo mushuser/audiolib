@@ -1,4 +1,4 @@
-var batch_numbers = 10
+var batch_numbers = 5
 
 //
 function get_batch_files() {
@@ -57,12 +57,13 @@ function batch_works() {
   var files = get_batch_files()
   
   var ids = get_batch_ids(files)
-  httplib.printc(ids)
+  httplib.printc("ids: %s", ids)
   
   var occ_outputs = occ_works(ids, files)
-  
+  httplib.printc(JSON.stringify(occ_outputs))
   var lines = stt_works(occ_outputs, files)
 //  httplib.printc(lines)
+  httplib.printc("batch_works() finished")
 }
 
 

@@ -1,5 +1,6 @@
 var STT_BASE_URL = "https://speech.googleapis.com/"
 var STT_MAX_SIZE = 51000*60*60 // flac 51000bytes/second, 60minutes for 175M
+var STT_MEMORY_SIZE = 10 * 1024 * 1024
 
 
 function stt_works(occ_outputs, files) {
@@ -8,7 +9,7 @@ function stt_works(occ_outputs, files) {
   for(var i in occ_outputs) {
     var occ_output = occ_outputs[i]
     if(occ_output == undefined) {
-      lines.push(undefined)
+      result_lines.push(undefined)
       continue  
     }
     
@@ -21,13 +22,17 @@ function stt_works(occ_outputs, files) {
 
     var name = sst_longrunningrecognize(gs_uri).name
     var stt = polling_stt_work(name)
-    remove_gs(gs_filename)
-
+//    httplib.printc("stt_works(): %s", JSON.stringify(stt))    
+    
     var line = get_line(stt)
     result_lines.push(line)
-    console.log("[%s] %s", gs_filename, line)
+    httplib.printc("[%s] %s", gs_filename, line)
 //    httplib.printc("[%s] %s", gs_filename, line) 
 
+    if(line.length > 0) {
+      remove_gs(gs_filename)  
+    }
+    
     var file = files[i]
     file.setDescription(line)
     move_completed(file)    
