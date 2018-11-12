@@ -4,6 +4,23 @@ function doGet() {
 
 var PAGE_SIZE = 10000
 
+function sort_mp3s(results) {
+  var new_results = results.sort(function(a, b) {
+    var nameA = a.filename.toUpperCase(); // ignore upper and lowercase
+    var nameB = b.filename.toUpperCase(); // ignore upper and lowercase
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    
+    return 0;
+  })
+
+  return new_results
+}
+
 function get_mp3s() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)
   var files = folder.getFiles()
@@ -34,5 +51,5 @@ function get_mp3s() {
     results.push(result)
   }
   
-  return results
+  return sort_mp3s(results)
 }

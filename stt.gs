@@ -82,7 +82,10 @@ function sst_longrunningrecognize(uri) {
       "enableAutomaticPunctuation": false,
       "encoding": get_encoding(uri),
       "languageCode": "cmn-Hant-TW",
-      "model": "default"
+      "model": "default",
+      "speechContexts": [{
+        "phrases":secret.phrases
+      }]
     }
   }  
   
