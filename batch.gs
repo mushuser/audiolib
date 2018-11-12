@@ -38,8 +38,6 @@ function get_batch_files() {
 function batch_works() { 
   var files = get_batch_files()
   
-  var files = files.slice(0,2)
-  
   if(files.length < 1) {    
     return
   }

@@ -26,11 +26,6 @@ function update_occ_key() {
 }
 
 
-function get_input_filename(output) {
-  
-}
-
-
 function upload_mp3s(outputs) {
   for(var i in outputs) {
     var output = outputs[i]
@@ -55,32 +50,6 @@ function get_id_fr_files(files) {
 }
 
 
-function get_file_fr_filename(files, filename) {
-  for(var i in files) {
-    var file_filename = files[i].getName()
-    if(file_filename == filename) {
-      return filename  
-    }
-  }
-  
-  return undefined
-}
-
-
-function get_output_fr_input_id(outputs, input_id) {
-  for(var i in outputs) {
-    var output = outputs[i]
-    var input = output.source.input[0]
-    
-    if(input == input_id) {
-      return output  
-    }
-  }  
-  
-  return undefined
-}
-
-
 function get_id_fr_inputs(input_id, inputs) {
   for(var i in inputs) {
     var input = inputs[i]
@@ -92,6 +61,7 @@ function get_id_fr_inputs(input_id, inputs) {
     }
   }
 }
+
 
 function get_mp3_drive_id(input_id, id_to_mp3s) {
   for(var i in id_to_mp3s) {
@@ -200,6 +170,7 @@ function get_conversions(targets) {
     
   return conversions
 }
+
 
 function get_config_payload(source_ids, targets) {
   var inputs = []
