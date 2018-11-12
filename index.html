@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <table border="1">
+      <? var files = get_mp3s() ?>
+      <? for (var i = 0; i < files.length; i++) { ?>
+        <tr>
+          <td><a href="<?= files[i].url ?>" target="_blank"><?= files[i].filename ?></a></td>
+          <td><?= files[i].size ?></td>
+          <td><?= files[i].desc ?></td>
+        </tr>
+      <? } ?>
+    </table>
+  </body>
+</html>
