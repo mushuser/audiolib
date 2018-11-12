@@ -1,4 +1,4 @@
-var batch_numbers = 10
+var batch_numbers = 5
 
 //
 function get_batch_files() {

@@ -6,19 +6,27 @@ var STT_MEMORY_SIZE = 10 * 1024 * 1024
 function remove_mp3s_no_desc() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)
   var files = folder.getFiles()
-
+  var rm_files = []
+  
   while (files.hasNext()) {
     var file = files.next()
     var desc = file.getDescription()
-      
+    var name = file.getName()
+    
     if(desc == null) {
-      file.setTrashed(true) 
+      file.setTrashed(true)
+      rm_files.push(name)
     } else {
       if(desc.length < 1) {
         file.setTrashed(true)   
+        rm_files.push(name)
       }
     }
   }  
+  
+  httplib.printc("removed files: %s", rm_files)
+  
+  return rm_files
 }
 
 
