@@ -3,15 +3,11 @@ var STT_MAX_SIZE = 51000*60*60 // flac 51000bytes/second, 60minutes for 175M
 var STT_MEMORY_SIZE = 10 * 1024 * 1024
 
 
-function stt_works(occ_outputs, files) {
+function stt_works(occ_outputs) {
   var result_lines = []
   
   for(var i in occ_outputs) {
     var occ_output = occ_outputs[i]
-    if(occ_output == undefined) {
-      result_lines.push(undefined)
-      continue  
-    }
     
     var uri = occ_output.uri
     var gs = gs_upload(uri)
@@ -33,9 +29,14 @@ function stt_works(occ_outputs, files) {
       remove_gs(gs_filename)  
     }
     
-    var file = files[i]
-    file.setDescription(line)
-    move_completed(file)    
+    var wma_drive_id = occ_output.wma_drive_id
+    var wma_file = DriveApp.getFileById(wma_drive_id)
+    wma_file.setDescription(line)
+    move_completed(wma_file)    
+    
+    var mp3_drive_id = occ_output.mp3_drive_id
+    var mp3_file = DriveApp.getFileById(mp3_drive_id)
+    mp3_file.setDescription(line)
   }
   
   return result_lines
@@ -57,6 +58,13 @@ function polling_stt_work(name) {
 }
 
 
+function get_encoding(uri) {
+  var ext = uri.match(/([^\.]+$)/g)[0]
+  
+  return ext.toUpperCase()
+}
+
+
 function sst_longrunningrecognize(uri) {
   var access_token = authlib.g_get_accesstoken()
   var bearauth = authlib.get_bearerauth(access_token)
@@ -72,7 +80,7 @@ function sst_longrunningrecognize(uri) {
     },
     "config": {
       "enableAutomaticPunctuation": false,
-      "encoding": DEFAULT_TARGET.toUpperCase(),
+      "encoding": get_encoding(uri),
       "languageCode": "cmn-Hant-TW",
       "model": "default"
     }

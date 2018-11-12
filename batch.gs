@@ -35,22 +35,13 @@ function get_batch_files() {
 }
 
 
-function get_batch_ids(files) {
-  var ids = []
-  
-  for(var i in files) {
-    ids.push(files[i].getId())
-  }
-  
-  return ids
-}
-
-
 function batch_works() { 
   var files = get_batch_files()
   
+  var files = files.slice(0,2)
+  
   if(files.length < 1) {    
-    return  
+    return
   }
 
   if(update_occ_key()) {
@@ -60,14 +51,14 @@ function batch_works() {
     return st_single_work.NO_KEY_AVAILABLE
   }  
   
-  var ids = get_batch_ids(files)
+  var ids = get_id_fr_files(files)
   httplib.printc("ids: %s", ids)
-  
-  var occ_outputs = occ_works(ids, files)
-  httplib.printc(JSON.stringify(occ_outputs))
-  var lines = stt_works(occ_outputs, files)
+
+  var occ_outputs = occ_works(ids)
+//  httplib.printc("%s", JSON.stringify(occ_outputs))
+
+  var lines = stt_works(occ_outputs)
 //  httplib.printc(lines)
-  httplib.printc("batch_works() finished")
 }
 
 
@@ -107,4 +98,32 @@ function move_oversized(file_or_id) {
   
   new_folder.addFile(file)
   old_folder.removeFile(file)
+}
+
+function xx() {
+  update_occ_key() 
+  var ids = ["1mqM2TgLgxxHzoEUJsOWZbjEo7hSIB64G", "1Nq2CizPuWRLboyNdN1c-GSljMYwdXya3"]
+  var j = send_occ_work(ids)  
+//  Logger.log(j)  
+  var j2 = polling_occ_work(j.id)
+  Logger.log(j2)
+}
+
+
+function kk() {
+  var uri = "https://www29.online-convert.com/dl/web2/download-file/5f967a0f-92eb-48b3-a7c7-bd1249b7115c/sample.mp3"
+  var j = gs_upload(uri)
+  var gs_uri = get_gs_uri(j)
+  
+  Logger.log(gs_uri)
+}
+
+
+function ll() {
+  var gs_uri = "gs://audiolib-storage/sample.mp3"
+  var name = sst_longrunningrecognize(gs_uri).name
+  var stt = polling_stt_work(name)
+  Logger.log(stt)
+  
+  var line = get_line(stt)  
 }

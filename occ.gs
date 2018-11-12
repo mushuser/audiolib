@@ -1,7 +1,8 @@
 //note: keys reborn at 8am
 var MAX_DAILY = 30
 var OCC_BASE_URL = "https://api2.online-convert.com"
-var DEFAULT_TARGET = "flac"
+var DEFAULT_TARGETS = ["flac", "mp3"]
+var DEFAULT_FREQ = 44100
 var OCC_MAX_SIZE = 100*1024*1024 // 100M
 
 
@@ -12,7 +13,7 @@ var headers = {
 }  
 
 
-function update_occ_key() {
+function update_occ_key() { 
   for(var i in secret.occ_keys) {
     var key = secret.occ_keys[i]
     
@@ -25,33 +26,143 @@ function update_occ_key() {
 }
 
 
-function polling_occ_work(job_id, files) {
+function get_input_filename(output) {
+  
+}
+
+
+function upload_mp3s(outputs) {
+  for(var i in outputs) {
+    var output = outputs[i]
+    var type = output.output_type
+    
+    if(type.indexOf("mp3") > -1) {
+      var uri = output.output_uri
+      drive_upload(uri)
+    }    
+  }
+}
+
+
+function get_id_fr_files(files) {
+  var ids = []
+
+  for(var i in files) {
+    ids.push(files[i].getId())  
+  }
+  
+  return ids
+}
+
+
+function get_file_fr_filename(files, filename) {
+  for(var i in files) {
+    var file_filename = files[i].getName()
+    if(file_filename == filename) {
+      return filename  
+    }
+  }
+  
+  return undefined
+}
+
+
+function get_output_fr_input_id(outputs, input_id) {
+  for(var i in outputs) {
+    var output = outputs[i]
+    var input = output.source.input[0]
+    
+    if(input == input_id) {
+      return output  
+    }
+  }  
+  
+  return undefined
+}
+
+
+function get_id_fr_inputs(input_id, inputs) {
+  for(var i in inputs) {
+    var input = inputs[i]
+    
+    if(input.id == input_id) {
+      var source_id = input.source.match(/id=(.*)/)[1]
+      
+      return source_id
+    }
+  }
+}
+
+function get_mp3_drive_id(input_id, id_to_mp3s) {
+  for(var i in id_to_mp3s) {
+    var id = id_to_mp3s[i].id
+    if(id == input_id) {
+      return id_to_mp3s[i].mp3_drive_id
+    }
+  } 
+  
+  return undefined
+}
+
+
+function inject_mp3_drive_id(return_outputs, id_to_mp3s) {
+  for(var i in return_outputs) {
+    var input_id = return_outputs[i].source.input[0]
+    return_outputs[i].mp3_drive_id = get_mp3_drive_id(input_id, id_to_mp3s)
+  }
+  
+  return return_outputs
+}
+
+
+function polling_occ_work(job_id) {
   while(true) {
     Utilities.sleep(1*1000) 
-    var r = query_work(job_id)
-    var code = r.status.code
+
+    var raw_output = query_occ_work(job_id) 
+    var code = raw_output.status.code
     
     if(code == "completed") {
-      var outputs = []
-      for(var i in r.output) {
-        var output = r.output[i]
-        var filename = files[i].getName()
-        httplib.printc("[%s] %s", filename, JSON.stringify(output))
+      var return_outputs = []
+      var outputs = raw_output.output
+      var id_to_mp3s = []
+      
+      for(var i in outputs) {
+        var output = outputs[i]
+        var filename = get_filename(output.uri)
+        var type = output.content_type
         
-        var size = output.size
-        
-        if(size >= STT_MEMORY_SIZE) {
-          var file = files[i]
-          var filename = get_filename_gs(output.uri)
-          httplib.printc("polling_occ_work(): size over: %d, %s", size, filename)
-          move_oversized(file)
+        if(type.indexOf("mp3") > -1) {
+          var id_to_mp3 = {
+            "id":undefined,
+            "mp3_drive_id":undefined
+          }
+          var mp3_drive_id = drive_upload(output.uri)
+          id_to_mp3.id = output.source.input[0]
+          id_to_mp3.mp3_drive_id = mp3_drive_id
+          id_to_mp3s.push(id_to_mp3)
           
-          outputs.push(undefined)          
-        } else {
-          outputs.push(output)          
+//          output.mp3_drive_id = mp3_drive_id
+          httplib.printc("[%s] uploaded: %s", filename, mp3_drive_id)
+        } else if(type.indexOf("flac") > -1) {
+          var input_id = output.source.input[0]
+          var inputs = raw_output.input
+          var wma_drive_id = get_id_fr_inputs(input_id, inputs)
+
+          if(output.size >= STT_MEMORY_SIZE) {
+            httplib.printc("[%s] size over: %d", filename, output.size)      
+            move_oversized(wma_drive_id)
+//            return_outputs.push(undefined)          
+          } else {
+            output.wma_drive_id = wma_drive_id
+            return_outputs.push(output)          
+          }
         }
       }
-      return outputs
+      
+      return_outputs = inject_mp3_drive_id(return_outputs, id_to_mp3s)
+        
+      return return_outputs
     } else {
       httplib.printc("polling_occ_work() status: %s", code)
     }
@@ -59,7 +170,7 @@ function polling_occ_work(job_id, files) {
 }
 
 
-function query_work(job_id) {
+function query_occ_work(job_id) {
   var url = OCC_BASE_URL + "/jobs/" + job_id
   var options = {
     "headers":headers
@@ -72,16 +183,26 @@ function query_work(job_id) {
 }
 
 
-function get_config_payload(source_ids, target) {
-  var inputs = []
-
-  var conversion = {
-    "target": (target == undefined)?DEFAULT_TARGET:target,
-    "options": {
-      "channels": "mono",
-      "allow_multiple_outputs":true
+function get_conversions(targets) {
+  var conversions = []
+  
+  for(var i in targets) {
+    var conversion = {
+      "target": targets[i],
+      "options": {
+        "channels": "mono",
+        "allow_multiple_outputs":true,
+      }
     }
+    
+    conversions.push(conversion)
   }
+    
+  return conversions
+}
+
+function get_config_payload(source_ids, targets) {
+  var inputs = []
   
   for(var i in source_ids) {
     var source = "https://drive.google.com/uc?export=download&id=" + source_ids[i]
@@ -93,19 +214,20 @@ function get_config_payload(source_ids, target) {
   }
   
   var payload = {
-    "input": (inputs),
-    "conversion": ([conversion])
+    "input": inputs,
+    "conversion": get_conversions(targets)
   }
 
   return payload
 }
 
 
-function occ_works(source_ids, files) {
+function occ_works(source_ids) {
   if(source_ids.length > 0) {
     var work = send_occ_work(source_ids)
+//    httplib.printc("%s", JSON.stringify(work))
     var id = work.id
-    var outputs = polling_occ_work(id, files)
+    var outputs = polling_occ_work(id)
     
     return outputs
   }
@@ -113,7 +235,7 @@ function occ_works(source_ids, files) {
 
 
 function send_occ_work(source_ids) {
-  var payload = get_config_payload(source_ids)  
+  var payload = get_config_payload(source_ids, DEFAULT_TARGETS)  
 
   var options = {
     "payload": JSON.stringify(payload),
@@ -195,3 +317,8 @@ function get_available_minutes() {
   
   return available_minutes
 }  
+
+
+function occ_to_mp3(source_ids, files) {
+  
+}
