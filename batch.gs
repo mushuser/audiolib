@@ -1,4 +1,4 @@
-var batch_numbers = 5
+var batch_numbers = 10
 
 //
 function get_batch_files() {
@@ -57,6 +57,7 @@ function batch_works() {
 
   var lines = stt_works(occ_outputs)
 //  httplib.printc(lines)
+  remove_mp3s_no_desc()
 }
 
 

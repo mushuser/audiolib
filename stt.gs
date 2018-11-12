@@ -3,6 +3,25 @@ var STT_MAX_SIZE = 51000*60*60 // flac 51000bytes/second, 60minutes for 175M
 var STT_MEMORY_SIZE = 10 * 1024 * 1024
 
 
+function remove_mp3s_no_desc() {
+  var folder = DriveApp.getFolderById(secret.mp3_folder_id)
+  var files = folder.getFiles()
+
+  while (files.hasNext()) {
+    var file = files.next()
+    var desc = file.getDescription()
+      
+    if(desc == null) {
+      file.setTrashed(true) 
+    } else {
+      if(desc.length < 1) {
+        file.setTrashed(true)   
+      }
+    }
+  }  
+}
+
+
 function stt_works(occ_outputs) {
   var result_lines = []
   
@@ -23,20 +42,19 @@ function stt_works(occ_outputs) {
     var line = get_line(stt)
     result_lines.push(line)
     httplib.printc("[%s] %s", gs_filename, line)
-//    httplib.printc("[%s] %s", gs_filename, line) 
 
     if(line.length > 0) {
       remove_gs(gs_filename)  
+    
+      var wma_drive_id = occ_output.wma_drive_id
+      var wma_file = DriveApp.getFileById(wma_drive_id)
+      wma_file.setDescription(line)
+      move_completed(wma_file)    
+      
+      var mp3_drive_id = occ_output.mp3_drive_id
+      var mp3_file = DriveApp.getFileById(mp3_drive_id)
+      mp3_file.setDescription(line)
     }
-    
-    var wma_drive_id = occ_output.wma_drive_id
-    var wma_file = DriveApp.getFileById(wma_drive_id)
-    wma_file.setDescription(line)
-    move_completed(wma_file)    
-    
-    var mp3_drive_id = occ_output.mp3_drive_id
-    var mp3_file = DriveApp.getFileById(mp3_drive_id)
-    mp3_file.setDescription(line)
   }
   
   return result_lines
