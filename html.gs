@@ -1,5 +1,7 @@
 function doGet() {
   return HtmlService.createTemplateFromFile('index').evaluate();
+  // serve json objs, github.io host js files
+  // get or post, get: this html, post: api for github.io
 }
 
 var PAGE_SIZE = 10000

@@ -1,7 +1,7 @@
-var STT_BASE_URL = "https://speech.googleapis.com/"
+var STT_VERSION = "v1p1beta1" // v1p1beta1 or v1
+var STT_BASE_URL = "https://speech.googleapis.com/" + STT_VERSION
 var STT_MAX_SIZE = 51000*60*60 // flac 51000bytes/second, 60minutes for 175M
 var STT_MEMORY_SIZE = 10 * 1024 * 1024
-
 
 function remove_mp3s_no_desc() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)
@@ -24,14 +24,17 @@ function remove_mp3s_no_desc() {
     }
   }  
   
-  httplib.printc("removed files: %s", rm_files)
-  
+  if(rm_files.length > 0) {
+    httplib.printc("removed files: %s", rm_files)
+  } 
   return rm_files
 }
 
 
 function stt_works(occ_outputs) {
   var result_lines = []
+  
+  httplib.printc("STT_VERSION: %s", STT_VERSION)
   
   for(var i in occ_outputs) {
     var occ_output = occ_outputs[i]
@@ -121,7 +124,7 @@ function sst_longrunningrecognize(uri) {
     "muteHttpExceptions": false    
   }
   
-  var url = STT_BASE_URL + "/v1/speech:longrunningrecognize"    
+  var url = STT_BASE_URL + "/speech:longrunningrecognize"    
   var r = httplib.httpretry(url, options)
   var j = JSON.parse(r)
   
@@ -130,7 +133,7 @@ function sst_longrunningrecognize(uri) {
 
 
 function get_status(name) {
-  var url = "https://speech.googleapis.com/v1/operations/" + name
+  var url = STT_BASE_URL + "/operations/" + name
 
   var access_token = authlib.g_get_accesstoken()
   var bearauth = authlib.get_bearerauth(access_token)

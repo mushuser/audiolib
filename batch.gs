@@ -43,14 +43,14 @@ function batch_works() {
   }
 
   if(update_occ_key()) {
-    httplib.printc("api key: %s", headers["X-Oc-Api-Key"])
+    httplib.printc("OCC key: %s", headers["X-Oc-Api-Key"])
   } else {
     httplib.printc("all keys not available")
     return st_single_work.NO_KEY_AVAILABLE
   }  
   
   var ids = get_id_fr_files(files)
-  httplib.printc("ids: %s", ids)
+  httplib.printc("drive IDs: %s", ids)
 
   var occ_outputs = occ_works(ids)
 //  httplib.printc("%s", JSON.stringify(occ_outputs))

@@ -134,7 +134,7 @@ function polling_occ_work(job_id) {
         
       return return_outputs
     } else {
-      httplib.printc("polling_occ_work() status: %s", code)
+      httplib.printc("polling_occ_work(): %s", code)
     }
   }  
 }
