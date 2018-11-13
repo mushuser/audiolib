@@ -10,9 +10,11 @@ function sort_mp3s(results) {
   var new_results = results.sort(function(a, b) {
     var nameA = a.filename.toUpperCase(); // ignore upper and lowercase
     var nameB = b.filename.toUpperCase(); // ignore upper and lowercase
+    
     if (nameA < nameB) {
       return -1;
     }
+    
     if (nameA > nameB) {
       return 1;
     }
