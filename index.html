@@ -7,11 +7,6 @@
   </script>
     
   <script>
-    function handleCheckboxChange(checkbox) {
-      console.log(checkbox)
-      google.script.run.set_starred(checkbox.id, checkbox.checked)
-    }      
-
     function get_files(files) {
       var tbl = $('<table></table>').attr({id: "top-table", border:1});
       $("#top-div").html(tbl)
