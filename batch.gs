@@ -1,10 +1,46 @@
 var batch_numbers = 5
 
+
+function get_mainname_fr_mp3s() {
+  var folder = DriveApp.getFolderById(secret.mp3_folder_id)
+  var files = folder.getFiles()
+  var mainnames = []
+  
+  while (files.hasNext()) {
+    var file = files.next()
+    var mainname = get_mainname(file.getName())
+    mainnames.push(mainname)
+  }
+  
+  return mainnames  
+}
+
+
+function get_mainname(filename) {
+  var match = filename.match(/(.*)\./)[1]
+  
+  return match
+}
+
+
+function has_desc(desc) {
+  if((desc == null) || (desc == undefined)) {    
+    return false  
+  } else {
+    if(desc.length > 0) {
+      return true  
+    } else {
+      return false
+    }
+  }
+}
+
 //
 function get_batch_files(folder_id, max) {
   var folder = DriveApp.getFolderById(folder_id)
   var files = folder.getFiles()
   var result_files = []
+  var mp3_mainnames = get_mainname_fr_mp3s()
   
   while (files.hasNext()) {
     if(result_files.length >= max) {
@@ -14,12 +50,25 @@ function get_batch_files(folder_id, max) {
     var file = files.next()
     var desc = file.getDescription()
     var size = file.getSize()
+    var filename = file.getName()
+    var mainname = get_mainname(filename)
     
     if(size > OCC_MAX_SIZE) {
       move_oversized(file)
       continue
     }
     
+    // if done
+    if((mp3_mainnames.indexOf(mainname) > -1) && has_desc(desc)) {
+      if(folder_id != secret.completed_folder_id) { 
+        move_completed(file)
+      }
+      continue
+    }
+    
+    // if not done, goes here
+
+    // oversized    
     if(folder_id == secret.oversized_folder_id) {
       if(file.isStarred() == false) {
         file.setStarred(true)
@@ -28,24 +77,24 @@ function get_batch_files(folder_id, max) {
       continue
     }
     
-    if((desc == null) || (desc == undefined)) {
-      result_files.push(file)
-    } else {
-      if(desc.length > 0) {
-        move_completed(file)
-      } else {
-        result_files.push(file)
-      }
-    }
+    result_files.push(file)
   }
 
   return result_files
 }
 
 
+// for those wma in completed folder, but not in mp3 folder
+function batch_works_halfdone() {
+  var files = get_batch_files(secret.completed_folder_id, batch_numbers)
+  httplib.printc("batch_works_halfdone()")
+  batch_works(files)  
+}
+
+
 function batch_works_oversized() {
   var files = get_batch_files(secret.oversized_folder_id, 1)
-  httplib.printc("%s", "batch_works_oversized()")
+  httplib.printc("batch_works_oversized()")
   batch_works(files)  
 }
 
