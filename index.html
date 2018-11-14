@@ -2,14 +2,23 @@
 <html>
   <head>
     <base target="_top">
+    
+    <script>
+    function handleCheckboxChange(checkbox) {
+      console.log(checkbox.checked)
+      console.log(checkbox.id)
+      google.script.run.set_starred(checkbox.id, checkbox.checked)
+    }      
+    </script>
   </head>
   <body>
     <table border="1">
-      <? var files = get_mp3s() ?>
+      <? var files = get_mp3s_by_date() ?>
       <? for (var i = 0; i < files.length; i++) { ?>
         <tr>
           <td><a href="<?= files[i].url ?>" target="_blank"><?= files[i].filename ?></a></td>
           <td><?= files[i].size ?></td>
+          <td><input type="checkbox" id="<?= files[i].id ?>" <?= files[i].starred?"checked":"" ?> onchange=handleCheckboxChange(this)></td>
           <td><?= files[i].desc ?></td>
         </tr>
       <? } ?>
