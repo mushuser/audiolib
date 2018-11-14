@@ -1,8 +1,15 @@
-function doGet() {
+function doGet(e) {
   return HtmlService.createTemplateFromFile('index').evaluate();
   // serve json objs, github.io host js files
   // get or post, get: this html, post: api for github.io
 }
+
+
+function doPost() {
+  
+  
+}
+
 
 var PAGE_SIZE = 10000
 
@@ -24,6 +31,13 @@ function sort_mp3s(results) {
 
   return new_results
 }
+
+
+function get_mp3s_by_date(datestr) {
+  var files = get_mp3s()
+  
+}
+
 
 function get_mp3s() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)

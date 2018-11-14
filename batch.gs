@@ -1,13 +1,13 @@
 var batch_numbers = 5
 
 //
-function get_batch_files() {
-  var folder = DriveApp.getFolderById(secret.source_folder_id)
+function get_batch_files(folder_id, max) {
+  var folder = DriveApp.getFolderById(folder_id)
   var files = folder.getFiles()
   var result_files = []
   
   while (files.hasNext()) {
-    if(result_files.length == batch_numbers) {
+    if(result_files.length >= max) {
       return result_files  
     }
     
@@ -35,8 +35,17 @@ function get_batch_files() {
 }
 
 
-function batch_works() { 
-  var files = get_batch_files()
+function batch_works_oversized() {
+  var files = get_batch_files(secret.oversized_folder_id, 1)
+  httplib.printc("%s", "batch_works_oversized()")
+  batch_works(files)  
+}
+
+
+function batch_works(files) {
+  if(files == undefined) {
+    var files = get_batch_files(secret.source_folder_id, batch_numbers)
+  }
   
   if(files.length < 1) {    
     return
@@ -48,7 +57,7 @@ function batch_works() {
     httplib.printc("all keys not available")
     return st_single_work.NO_KEY_AVAILABLE
   }  
-  
+
   var ids = get_id_fr_files(files)
   httplib.printc("drive IDs: %s", ids)
 
@@ -70,18 +79,30 @@ var st_single_work = {
 }
 
 
+function clean_folders(file, keep_folder_id) {
+  var parents = file.getParents()
+  
+  while (parents.hasNext()) {
+    var folder = parents.next();
+    var folder_id = folder.getId()
+    
+    if(folder_id != keep_folder_id) {
+      folder.removeFile(file)
+    }
+  }
+}
+
+
 function move_completed(file_or_id) {
   if(typeof(file_or_id) == "object") {
     var file = file_or_id
   } else {
     var file = DriveApp.getFileById(file_or_id)  
   }
-  
-  var old_folder = DriveApp.getFolderById(secret.source_folder_id)
   var new_folder = DriveApp.getFolderById(secret.completed_folder_id)  
   
-  new_folder.addFile(file)
-  old_folder.removeFile(file)
+  new_folder.addFile(file)  
+  clean_folders(file, secret.completed_folder_id)
 }
 
 
@@ -92,9 +113,8 @@ function move_oversized(file_or_id) {
     var file = DriveApp.getFileById(file_or_id)  
   }
   
-  var old_folder = DriveApp.getFolderById(secret.source_folder_id)
   var new_folder = DriveApp.getFolderById(secret.oversized_folder_id)  
   
-  new_folder.addFile(file)
-  old_folder.removeFile(file)
+  new_folder.addFile(file)  
+  clean_folders(file, secret.oversized_folder_id)
 }

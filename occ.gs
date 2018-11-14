@@ -112,14 +112,14 @@ function polling_occ_work(job_id) {
           id_to_mp3.mp3_drive_id = mp3_drive_id
           id_to_mp3s.push(id_to_mp3)
           
-//          output.mp3_drive_id = mp3_drive_id
           httplib.printc("[%s] uploaded: %s", filename, mp3_drive_id)
         } else if(type.indexOf("flac") > -1) {
           var input_id = output.source.input[0]
           var inputs = raw_output.input
           var wma_drive_id = get_id_fr_inputs(input_id, inputs)
 
-          if(output.size >= STT_MEMORY_SIZE) {
+          // only one input: oversized wma, just do stt
+          if((output.size >= STT_MEMORY_SIZE) && (inputs.length > 1)) {
             httplib.printc("[%s] size over: %d", filename, output.size)      
             move_oversized(wma_drive_id)
 //            return_outputs.push(undefined)          
