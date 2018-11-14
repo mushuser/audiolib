@@ -1,27 +1,48 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <base target="_top">
+  <base target="_top">
     
-    <script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+  </script>
+    
+  <script>
     function handleCheckboxChange(checkbox) {
-      console.log(checkbox.checked)
-      console.log(checkbox.id)
+      console.log(checkbox)
       google.script.run.set_starred(checkbox.id, checkbox.checked)
     }      
+
+    function get_files(files) {
+      var tbl = $('<table></table>').attr({id: "top-table", border:1});
+      $("#top-div").html(tbl)
+  
+      for(var i in files) {
+        var file = files[i]
+        var row = $('<tr></tr>').appendTo($("#top-table"));
+        var td_filename = $('<td></td>').appendTo(row);
+        
+        var href_filename = $('<a></a>').text(file.filename).prop({href: file.url, target: "_blank"}).appendTo(td_filename)
+        $('<td></td>').text(file.size).appendTo(row);
+        
+        var td_starred = $('<td></td>').appendTo(row);    
+        $('<input type="checkbox"/>').prop({checked: file.starred, id: file.id}).appendTo(td_starred);
+        
+        $('<td></td>').text(file.desc).appendTo(row);    
+      }
+
+      $(':checkbox').change(function () {
+        var cb = $(this)[0]
+        google.script.run.set_starred(cb.id, cb.checked)
+      });   
+    }
+
+    $(function() {
+      google.script.run.withSuccessHandler(get_files).get_mp3s_by_date();
+    });    
+    
     </script>
   </head>
   <body>
-    <table border="1">
-      <? var files = get_mp3s_by_date() ?>
-      <? for (var i = 0; i < files.length; i++) { ?>
-        <tr>
-          <td><a href="<?= files[i].url ?>" target="_blank"><?= files[i].filename ?></a></td>
-          <td><?= files[i].size ?></td>
-          <td><input type="checkbox" id="<?= files[i].id ?>" <?= files[i].starred?"checked":"" ?> onchange=handleCheckboxChange(this)></td>
-          <td><?= files[i].desc ?></td>
-        </tr>
-      <? } ?>
-    </table>
+    <div id="top-div">Loading...</div>
   </body>
 </html>
