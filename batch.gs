@@ -20,6 +20,14 @@ function get_batch_files(folder_id, max) {
       continue
     }
     
+    if(folder_id == secret.oversized_folder_id) {
+      if(file.isStarred() == false) {
+        file.setStarred(true)
+        result_files.push(file)
+      }
+      continue
+    }
+    
     if((desc == null) || (desc == undefined)) {
       result_files.push(file)
     } else {
@@ -41,13 +49,15 @@ function batch_works_oversized() {
   batch_works(files)  
 }
 
-
+// run by trigger
+// {"year":2018,"month":11,"day-of-month":14,"day-of-week":3,"week-of-year":46,"hour":1,"minute":3,"second":33,"timezone":"UTC","authMode":{},"triggerUid":"65417"}
 function batch_works(files) {
-  if(files == undefined) {
+  if((files == undefined) || files.hasOwnProperty("year")) {
     var files = get_batch_files(secret.source_folder_id, batch_numbers)
   }
   
-  if(files.length < 1) {    
+  if(files.length < 1) {
+    httplib.printc("batch_works(): no files to do")    
     return
   }
 
@@ -57,7 +67,7 @@ function batch_works(files) {
     httplib.printc("all keys not available")
     return st_single_work.NO_KEY_AVAILABLE
   }  
-
+  
   var ids = get_id_fr_files(files)
   httplib.printc("drive IDs: %s", ids)
 
