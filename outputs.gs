@@ -1,3 +1,35 @@
+/* get_key_status()
+[  
+   {  
+      "created_at":"2018-11-15 01:00:00",
+      "input_traffic":"399852",
+      "output_traffic":"7055329",
+      "job_counter":"1",
+      "conversion_minutes":"2",
+      "completed_jobs":"1",
+      "failed_jobs":"0"
+   },
+   {  
+      "created_at":"2018-11-15 02:00:00",
+      "input_traffic":"767092",
+      "output_traffic":"4640129",
+      "job_counter":"1",
+      "conversion_minutes":"2",
+      "completed_jobs":"1",
+      "failed_jobs":"0"
+   },
+   {  
+      "created_at":"2018-11-15 03:00:00",
+      "input_traffic":"331632",
+      "output_traffic":"6128479",
+      "job_counter":"1",
+      "conversion_minutes":"2",
+      "completed_jobs":"1",
+      "failed_jobs":"0"
+   }
+]
+*/
+
 /* send_occ_work()
 {
    "id":"3f5596bc-f746-40ae-8ba1-1e6c048784d0",

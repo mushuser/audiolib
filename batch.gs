@@ -98,6 +98,8 @@ function batch_works_oversized() {
   batch_works(files)  
 }
 
+var g_key = update_occ_key()
+
 // run by trigger
 // {"year":2018,"month":11,"day-of-month":14,"day-of-week":3,"week-of-year":46,"hour":1,"minute":3,"second":33,"timezone":"UTC","authMode":{},"triggerUid":"65417"}
 function batch_works(files) {
@@ -110,7 +112,7 @@ function batch_works(files) {
     return
   }
 
-  if(update_occ_key()) {
+  if(g_key) {
     httplib.printc("OCC key: %s", headers["X-Oc-Api-Key"])
   } else {
     httplib.printc("all keys not available")

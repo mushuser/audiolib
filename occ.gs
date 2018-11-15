@@ -220,7 +220,7 @@ function send_occ_work(source_ids) {
   return j
 }
 
-// unknown bug here
+
 function reached_daily_max(key) {
   var t = get_key_status(key)
   
@@ -235,7 +235,7 @@ function reached_daily_max(key) {
   for(var i in jobs) {
     var job = jobs[i]
     
-    key_minutes = key_minutes + job.conversion_minutes
+    key_minutes = key_minutes + parseInt(job.conversion_minutes)
   }
 
   if(key_minutes >= MAX_DAILY) {

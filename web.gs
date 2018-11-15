@@ -144,6 +144,7 @@ function get_mp3s() {
   
   var sorted = sort_mp3s(results)
   dates = httplib.get_unique(dates)
+  
   var r = {
     files: sorted,
     dates: dates.sort()
