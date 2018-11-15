@@ -113,9 +113,9 @@ function batch_works(files) {
   }
 
   if(g_key) {
-    httplib.printc("OCC key: %s", headers["X-Oc-Api-Key"])
+    httplib.printc("batch_works(): key: %s", headers["X-Oc-Api-Key"])
   } else {
-    httplib.printc("all keys not available")
+    httplib.printc("batch_works(): all keys not available")
     return st_single_work.NO_KEY_AVAILABLE
   }  
   
