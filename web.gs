@@ -1,22 +1,4 @@
-var g_params = {
-  datestr: undefined  
-}
-
-
-function doGet(e) {
-  if(e.parameter == undefined) {
-    g_params.datestr = undefined
-  } else {
-    g_params.datestr = e.parameter.date
-  }
-  return HtmlService.createTemplateFromFile('index').evaluate();
-}
-
-
-function get_json(result) {
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);     
-}
-
+var PAGE_SIZE = 10000
 
 function doPost(e) {
   var action = e.parameter.action
@@ -37,7 +19,10 @@ function doPost(e) {
 }
 
 
-var PAGE_SIZE = 10000
+function get_json(result) {
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);     
+}
+
 
 function sort_mp3s(results) {
   var new_results = results.sort(function(a, b) {
@@ -62,6 +47,7 @@ function sort_mp3s(results) {
 function get_datestr(filename) {
   return filename.match(/([^_]*)/)[0] 
 }
+
 
 function get_timestr(filename) {
   return filename.match(/_(.*)_/)[1] 
