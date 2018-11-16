@@ -13,17 +13,6 @@ var headers = {
 }  
 
 
-function update_occ_key() { 
-  for(var i in secret.occ_keys) {
-    var key = secret.occ_keys[i]
-    
-    if(reached_daily_max(key) == false) {
-      return key  
-    }
-  }
-  
-  return undefined
-}
 
 
 function upload_mp3s(outputs) {
@@ -221,28 +210,44 @@ function send_occ_work(source_ids) {
 }
 
 
+function update_occ_key() { 
+  for(var i in secret.occ_keys) {
+    var key = secret.occ_keys[i]
+    if(reached_daily_max(key) == false) {
+      return key  
+    }
+  }
+  
+  return undefined
+}
+
+
 function reached_daily_max(key) {
-  var t = get_key_status(key)
+  var key_minutes = get_key_status(key)
   
-  if(t == "") {
-    return false
-  } else {
-    var jobs = JSON.parse(t)  
-  }
-
-  var key_minutes = 0
-  
-  for(var i in jobs) {
-    var job = jobs[i]
-    
-    key_minutes = key_minutes + parseInt(job.conversion_minutes)
-  }
-
   if(key_minutes >= MAX_DAILY) {
     return true  
   } else {
     return false  
   }
+}
+
+
+function get_minutes(output) {
+  if(output == "") {
+    return 0
+  }
+  
+  var jobs = JSON.parse(output)  
+  
+  var key_minutes = 0
+  
+  for(var i2 in jobs) {
+    var job = jobs[i2]
+    key_minutes = key_minutes + parseInt(job.conversion_minutes) * parseInt(job.completed_jobs)
+  }
+  
+  return key_minutes
 }
 
 
@@ -257,7 +262,7 @@ function get_key_status(key) {
    
   var r = httplib.httpretry(url, options)
 
-  return r
+  return get_minutes(r)
 }
 
 
@@ -267,29 +272,14 @@ function get_available_minutes() {
   for(var i in secret.occ_keys) {
     var key = secret.occ_keys[i]
 
-    var t = get_key_status(key)
-    var key_minutes = 0
+    var key_minutes = get_key_status(key)
 
-    if(t == "") {
-      key_minutes = 0
-    } else {
-      var jobs = JSON.parse(t)  
-      
-      for(var i2 in jobs) {
-        var job = jobs[i2]
-        key_minutes = key_minutes + parseInt(job.conversion_minutes)
-      }    
-    } 
     total_minutes = total_minutes + key_minutes
-    httplib.printc("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, (30-key_minutes), key)
+    httplib.printc("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, ((30-key_minutes)<0)?0:(30-key_minutes), key)
   }
+  
   var available_minutes = secret.occ_keys.length * 30 - total_minutes
   httplib.printc("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
   
   return available_minutes
 }  
-
-
-function occ_to_mp3(source_ids, files) {
-  
-}

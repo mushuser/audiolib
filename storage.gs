@@ -2,7 +2,7 @@ var GS_BASE_URL = "https://www.googleapis.com/storage/v1"
 var GS_UPLOAD_URL = "https://www.googleapis.com/upload/storage/v1"
 var GST_BASE_URL = "https://storagetransfer.googleapis.com/v1"
 
-var BUCKET_NAME = "audiolibrary-storage"
+var BUCKET_NAME = "audiolib-cloudstorage"
 
 
 function get_mime(filename) {
@@ -134,46 +134,91 @@ function get_tsv(ids) {
   return body
 }
 
+function get_scheduled_time(delta_seconds) {
+  var now = new Date()
+  var hours = now.getHours()
+  var minutes = now.getMinutes()
+  var seconds = now.getSeconds() + delta_seconds
+  var nanos = 0
+  
+  var r = {
+    hours:hours,
+    minutes:minutes,
+    seconds:seconds,
+    nanos:nanos
+  }
+  
+  return r
+}
+
+
+function get_scheduled_date() {
+  var now = new Date()
+  var year = now.getFullYear()
+  var month = now.getMonth()+1
+  var day = now.getDate()
+  
+  var r = {
+    year:year,
+    month:month,
+    day:day
+  }
+  
+  return r 
+}
+
+
 function gst_works(ids) {
   ids = ["1RSmMxbL5kQAX_irkmA2SRD4s9-CBZAu-", "1H-pQ0kCo84W2G1wwASqUnoSAONkGkUPC"]
   var body = get_tsv(ids)
   var listUrl = drive_upload_blob(body)
 
   var url = GST_BASE_URL + "/" + "transferJobs"  
+  
   var headers = {
     "Content-Type": "application/json",
     "Authorization": authlib.get_g_bearerauth()
   }  
   
   var transferSpec = {
-//    "objectConditions": {
-//      "minTimeElapsedSinceLastModification":
-//    },
+    "objectConditions": {
+      "minTimeElapsedSinceLastModification":"1s"
+    },    
     "transferOptions":{
       "overwriteObjectsAlreadyExistingInSink":true,
       "deleteObjectsUniqueInSink":false
     },
     "httpDataSource":{
       "listUrl":listUrl
+    },
+    "gcsDataSink":{
+      "bucketName":BUCKET_NAME
     }
   }
   
+  var current_date = get_scheduled_date()
+  
   var schedule = {
-    
+    "scheduleStartDate":current_date,
+    "scheduleEndDate":current_date,
+    "startTimeOfDay":get_scheduled_time(5)
   }
   
   
   var payload = {
-    "projectId":"4591241039406739601",
-    "status":"ENABLED",
+    "projectId":"project-id-4591241039406739601",
+    "status":1,
     "transferSpec":transferSpec,
     "schedule":schedule
   }
 
+  
+  Logger.log(payload)
+ 
   var options = {
-    "payload":payload,
+    "payload":JSON.stringify(payload),
     "headers":headers,
-    "method":"delete",
+    "method":"POST",
     "muteHttpExceptions": false 
   }
 
