@@ -1,5 +1,14 @@
 var batch_numbers = 5
 
+function get_filename_ext(filename) {
+  var match = filename.match(/\.([^\.]*$)/)
+  if(match) {
+    var ext = match[1]  
+    return ext.toLowerCase()
+  } else {
+    return undefined    
+  }
+}
 
 function get_mainname_fr_mp3s() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)
@@ -8,8 +17,13 @@ function get_mainname_fr_mp3s() {
   
   while (files.hasNext()) {
     var file = files.next()
-    var mainname = get_mainname(file.getName())
-    mainnames.push(mainname)
+    var filename = file.getName()
+    var ext = get_filename_ext(filename)
+    
+    if(ext == "mp3") {
+       var mainname = get_mainname(file.getName())
+       mainnames.push(mainname)
+    }
   }
   
   return mainnames  
@@ -51,6 +65,12 @@ function get_batch_files(folder_id, max) {
     var desc = file.getDescription()
     var size = file.getSize()
     var filename = file.getName()
+    var ext = get_filename_ext(filename)
+    
+    if(ext != "wma") {
+      continue  
+    }
+    
     var mainname = get_mainname(filename)
     
     if(size > OCC_MAX_SIZE) {

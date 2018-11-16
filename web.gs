@@ -102,6 +102,12 @@ function set_starred(file_id, starred) {
 }
 
 
+function get_downloadurl(file) {
+  var url = file.getDownloadUrl().replace("&gd=true","")
+  return url
+}
+
+
 function get_mp3s() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)
   var files = folder.getFiles()
@@ -114,9 +120,13 @@ function get_mp3s() {
     }
     
     var file = files.next()
+    var filename = file.getName()
+    var ext = get_filename_ext(filename)
+    if(ext != "mp3") {
+      continue  
+    }
     var desc = file.getDescription()
     var size = file.getSize()
-    var filename = file.getName()
     var id = file.getId()
     var url = file.getUrl()
     var starred = file.isStarred()
@@ -124,7 +134,7 @@ function get_mp3s() {
     dates.push(date)
     var time = get_timestr(filename)
     var seq = get_seq(filename)
-    var download_url = file.getDownloadUrl().replace("&gd=true","")
+    var download_url = get_downloadurl(file)
     
     var result = {
       desc: desc,
