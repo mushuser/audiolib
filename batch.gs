@@ -1,5 +1,6 @@
 var batch_numbers = 5
 
+
 function get_filename_ext(filename) {
   var match = filename.match(/\.([^\.]*$)/)
   if(match) {
@@ -9,6 +10,7 @@ function get_filename_ext(filename) {
     return undefined    
   }
 }
+
 
 function get_mainname_fr_mp3s() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)
@@ -142,12 +144,15 @@ function batch_works(files) {
   var ids = get_id_fr_files(files)
   httplib.printc("drive IDs: %s", ids)
 
-  var occ_outputs = occ_works(ids)
-//  httplib.printc("%s", JSON.stringify(occ_outputs))
-
-  var lines = stt_works(occ_outputs)
-//  httplib.printc(lines)
-  remove_mp3s_no_desc()
+  try {
+    var occ_outputs = occ_works(ids)
+    //  httplib.printc("%s", JSON.stringify(occ_outputs))
+    
+    var lines = stt_works(occ_outputs)
+    //  httplib.printc(lines)
+  } finally {
+    remove_mp3s_no_desc()
+  }
 }
 
 
