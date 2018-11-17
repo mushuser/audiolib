@@ -224,8 +224,9 @@ function update_occ_key() {
 
 function reached_daily_max(key) {
   var key_minutes = get_key_status(key)
+  var one_batch_minutes = 5
   
-  if(key_minutes >= MAX_DAILY) {
+  if((key_minutes + one_batch_minutes) >= MAX_DAILY) {
     return true  
   } else {
     return false  
