@@ -2,7 +2,7 @@ var GS_BASE_URL = "https://www.googleapis.com/storage/v1"
 var GS_UPLOAD_URL = "https://www.googleapis.com/upload/storage/v1"
 var GST_BASE_URL = "https://storagetransfer.googleapis.com/v1"
 
-var BUCKET_NAME = "audiolib-cloudstorage"
+var BUCKET_NAME = "audiolib-cs"
 
 
 function get_mime(filename) {
