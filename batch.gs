@@ -161,15 +161,6 @@ function batch_works(files) {
 }
 
 
-var st_single_work = {
-  "OK":0,
-  "OCC_OVERSIZE":1,
-  "STT_OVERSIZE":2,
-  "UNKNOWN":3,
-  "NO_KEY_AVAILABLE":4
-}
-
-
 function clean_folders(file, keep_folder_id) {
   var parents = file.getParents()
   
