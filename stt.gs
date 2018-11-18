@@ -12,6 +12,11 @@ function remove_mp3s_no_desc() {
     var file = files.next()
     var desc = file.getDescription()
     var name = file.getName()
+    var ext = get_filename_ext(name)
+    
+    if(ext != "mp3") {
+      continue  
+    }      
     
     if(desc == null) {
       file.setTrashed(true)

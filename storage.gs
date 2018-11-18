@@ -136,16 +136,18 @@ function get_tsv(ids) {
 
 function get_scheduled_time(delta_seconds) {
   var now = new Date()
+  now.setHours(now.getHours() - 8)
+  now.setSeconds(now.getSeconds() + delta_seconds)
   var hours = now.getHours()
   var minutes = now.getMinutes()
-  var seconds = now.getSeconds() + delta_seconds
+  var seconds = now.getSeconds()
   var nanos = 0
   
   var r = {
     hours:hours,
     minutes:minutes,
-    seconds:seconds,
-    nanos:nanos
+//    seconds:seconds,
+//    nanos:nanos
   }
   
   return r
@@ -172,21 +174,22 @@ function gst_works(ids) {
   ids = ["1RSmMxbL5kQAX_irkmA2SRD4s9-CBZAu-", "1H-pQ0kCo84W2G1wwASqUnoSAONkGkUPC"]
   var body = get_tsv(ids)
   var listUrl = drive_upload_blob(body)
-
-  var url = GST_BASE_URL + "/" + "transferJobs"  
+  var listUrl = "https://storage.googleapis.com/audiolib-cs/tsv_blob.txt"
+  var url = GST_BASE_URL + "/" + "transferJobs"// + "?key=" + "AIzaSyA7KZ08H9GXv1jPvcHPt1kVdqkKwDSnss8" 
   
   var headers = {
     "Content-Type": "application/json",
-    "Authorization": authlib.get_g_bearerauth()
+    "Authorization": get_serviceaccount_bearer()
   }  
   
   var transferSpec = {
     "objectConditions": {
-      "minTimeElapsedSinceLastModification":"1s"
+      "minTimeElapsedSinceLastModification":"0s",
+      "maxTimeElapsedSinceLastModification":"604800s"
     },    
     "transferOptions":{
       "overwriteObjectsAlreadyExistingInSink":true,
-      "deleteObjectsUniqueInSink":false
+      "deleteObjectsFromSourceAfterTransfer":false
     },
     "httpDataSource":{
       "listUrl":listUrl
@@ -201,23 +204,25 @@ function gst_works(ids) {
   var schedule = {
     "scheduleStartDate":current_date,
     "scheduleEndDate":current_date,
-    "startTimeOfDay":get_scheduled_time(5)
+    "startTimeOfDay":get_scheduled_time(30)
   }
   
   
   var payload = {
-    "projectId":"project-id-4591241039406739601",
-    "status":1,
+    "projectId":"project-id-8464513615628612722",
+    "description":ids.join(","),
+    "status":"ENABLED",
     "transferSpec":transferSpec,
     "schedule":schedule
   }
 
   
+  Logger.log(headers)
   Logger.log(payload)
  
   var options = {
     "payload":JSON.stringify(payload),
-    "headers":headers,
+    "headers":(headers),
     "method":"POST",
     "muteHttpExceptions": false 
   }
@@ -226,4 +231,64 @@ function gst_works(ids) {
   
 
   Logger.log(r)
+}
+
+
+function get_jwt() {
+//  var header = {"alg":"RS256","typ":"JWT","kid":secret.audiolib_serviceaccount.kid}
+  var header = {"alg":"RS256","typ":"JWT"}
+  var b64_header = Utilities.base64EncodeWebSafe(JSON.stringify(header))
+  
+  var iss = secret.audiolib_serviceaccount.iss
+  var scope = "https://www.googleapis.com/auth/cloud-platform"
+  var aud = "https://www.googleapis.com/oauth2/v4/token"
+  var iat = Math.round((new Date).getTime()/1000)
+  var exp = new Date()
+  exp.setMinutes(exp.getMinutes() + 60)
+  exp = Math.round((exp.getTime()/1000))
+  
+  var claim = { 
+    "iss":iss,
+    "sub":iss,
+    "scope":scope,
+    "aud":aud,
+    "exp":exp,
+    "iat":iat
+  }
+  
+  var b64_claim = Utilities.base64EncodeWebSafe(JSON.stringify(claim))  
+  var signature_input = b64_header + "." + b64_claim
+  var key = secret.audiolib_serviceaccount.key
+  
+  var signature = Utilities.computeRsaSha256Signature(signature_input, key)
+  var b64_signature = Utilities.base64EncodeWebSafe(signature)
+  var jwt = signature_input + "." + b64_signature
+
+  return jwt  
+}
+
+
+function get_serviceaccount_bearer() {
+  return "Bearer " + get_serviceaccount_accesstoken()
+}
+
+
+function get_serviceaccount_accesstoken() {
+  var payload = {
+    "grant_type":"urn:ietf:params:oauth:grant-type:jwt-bearer",
+    "assertion":get_jwt(),    
+  }
+  
+  var options = {
+    "method":"post",
+    "payload":payload
+  }
+  
+  var url = "https://www.googleapis.com/oauth2/v4/token"
+  
+  var r = httplib.httpretry(url, options)
+  
+  var j = JSON.parse(r)
+  
+  return j.access_token
 }
