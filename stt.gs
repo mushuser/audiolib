@@ -26,7 +26,9 @@ function remove_mp3s_no_desc() {
   
   if(rm_files.length > 0) {
     httplib.printc("removed files: %s", rm_files)
-  } 
+  } else {
+    httplib.printc("no no-desc mp3 removed")
+  }
   return rm_files
 }
 
