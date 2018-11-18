@@ -210,41 +210,19 @@ function send_occ_work(source_ids) {
 }
 
 
-function update_occ_key() { 
-  for(var i in secret.occ_keys) {
-    var key = secret.occ_keys[i]
-    if(reached_daily_max(key) == false) {
-      return key  
-    }
-  }
-  
-  return undefined
-}
-
-
 function get_available_key(number_tasks) {  
   for(var i in secret.occ_keys) {
     var key = secret.occ_keys[i]
     var key_minutes = get_key_status(key)
     
-    if((key_minutes + number_tasks) >= MAX_DAILY) {
+    if((key_minutes + number_tasks) < MAX_DAILY) {
       headers["X-Oc-Api-Key"] = key
       return key
-    } else {
-      return undefined 
-    }
+    } 
   }
-}
 
-function reached_daily_max(key) {
-  var key_minutes = get_key_status(key)
-  var one_batch_minutes = 5
-  
-  if((key_minutes + one_batch_minutes) >= MAX_DAILY) {
-    return true  
-  } else {
-    return false  
-  }
+  headers["X-Oc-Api-Key"] = undefined
+  return undefined 
 }
 
 
@@ -271,6 +249,7 @@ function get_key_status(key) {
   var url = OCC_BASE_URL + "/stats/day/" + date_str + "/single"
   
   headers["X-Oc-Api-Key"] = key
+
   var options = {
     "headers":headers
   }
