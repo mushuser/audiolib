@@ -141,9 +141,15 @@ function batch_works(files) {
     return st_single_work.NO_KEY_AVAILABLE
   }  
   
+  for(var i in files) {
+    var file = files[i]
+    var id = file.getId()
+    var name = file.getName()
+    httplib.printc("Processing: %s, %s", name, id)
+  }
+  
   var ids = get_id_fr_files(files)
-  httplib.printc("drive IDs: %s", ids)
-
+  
   try {
     var occ_outputs = occ_works(ids)
     //  httplib.printc("%s", JSON.stringify(occ_outputs))
