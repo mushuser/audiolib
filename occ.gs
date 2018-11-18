@@ -222,6 +222,20 @@ function update_occ_key() {
 }
 
 
+function get_available_key(number_tasks) {  
+  for(var i in secret.occ_keys) {
+    var key = secret.occ_keys[i]
+    var key_minutes = get_key_status(key)
+    
+    if((key_minutes + number_tasks) >= MAX_DAILY) {
+      headers["X-Oc-Api-Key"] = key
+      return key
+    } else {
+      return undefined 
+    }
+  }
+}
+
 function reached_daily_max(key) {
   var key_minutes = get_key_status(key)
   var one_batch_minutes = 5
@@ -276,11 +290,11 @@ function get_available_minutes() {
     var key_minutes = get_key_status(key)
 
     total_minutes = total_minutes + key_minutes
-    httplib.printc("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, ((30-key_minutes)<0)?0:(30-key_minutes), key)
+    httplib.printl("[%02d-%02d-%02d] %s", (parseInt(i) + 1), key_minutes, ((30-key_minutes)<0)?0:(30-key_minutes), key)
   }
   
   var available_minutes = secret.occ_keys.length * 30 - total_minutes
-  httplib.printc("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
+  httplib.printl("quota: %d, available: %d", (secret.occ_keys.length * 30), available_minutes)
   
   return available_minutes
 }  
