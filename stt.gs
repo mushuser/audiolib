@@ -112,6 +112,9 @@ function stt_works_gst(occ_outputs) {
       var wma_drive_id = occ_output.wma_drive_id
       var wma_file = DriveApp.getFileById(wma_drive_id)
       wma_file.setDescription(line)
+      if(wma_file.isStarred() == true) {
+        wma_file.setStarred(false) // for oversized
+      }
       move_completed(wma_file)    
       
       var mp3_drive_id = occ_output.mp3_drive_id
