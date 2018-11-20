@@ -102,9 +102,21 @@ function set_starred(file_id, starred) {
 }
 
 
-function get_downloadurl(file) {
-  var url = file.getDownloadUrl().replace("&gd=true","")
+function get_downloadurl(id) {
+  var url = "https://drive.google.com/uc?export=download&id=" + id
+  
   return url
+}
+
+
+function validate_filename(filename) {
+  // 20180425_1920_0045.mp3
+  var t = /\d{8}_\d{4}_\d{4}\.\w{3}/.test(filename)
+  if(t == false) {
+    throw "validate_filename() failed"    
+  }
+  
+  return t
 }
 
 
@@ -121,6 +133,8 @@ function get_mp3s() {
     
     var file = files.next()
     var filename = file.getName()
+    validate_filename(filename)
+    
     var ext = get_filename_ext(filename)
     if(ext != "mp3") {
       continue  
@@ -134,7 +148,7 @@ function get_mp3s() {
     dates.push(date)
     var time = get_timestr(filename)
     var seq = get_seq(filename)
-    var download_url = get_downloadurl(file)
+    var download_url = get_downloadurl(id)
     
     var result = {
       desc: desc,

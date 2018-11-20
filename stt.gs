@@ -50,7 +50,52 @@ function stt_works(occ_outputs) {
     var gs = gs_upload(uri)
     var gs_filename = gs.name
         
-    var gs_uri = get_gs_uri(gs)    
+    var gs_uri = get_gs_uri(gs.bucket, gs.name)    
+//    httplib.printc("uri_to_gs(): %s", gs_uri)    
+
+    var name = sst_longrunningrecognize(gs_uri).name
+    var stt = polling_stt_work(name)
+//    httplib.printc("stt_works(): %s", JSON.stringify(stt))    
+    
+    var line = get_line(stt)
+    result_lines.push(line)
+    httplib.printc("[%s] %s", gs_filename, line)
+
+    if(line.length > 0) {
+      remove_gs(gs_filename)  
+    
+      var wma_drive_id = occ_output.wma_drive_id
+      var wma_file = DriveApp.getFileById(wma_drive_id)
+      wma_file.setDescription(line)
+      move_completed(wma_file)    
+      
+      var mp3_drive_id = occ_output.mp3_drive_id
+      var mp3_file = DriveApp.getFileById(mp3_drive_id)
+      mp3_file.setDescription(line)
+    }
+  }
+  
+  return result_lines
+}
+
+
+function stt_works_gst(occ_outputs) {
+  var result_lines = []
+  
+  httplib.printc("STT_VERSION: %s", STT_VERSION)
+  
+  for(var i in occ_outputs) {
+    var occ_output = occ_outputs[i]
+    
+    var uri = occ_output.uri
+    var gs_filename = get_filename(uri)
+    
+    if(check_file_exist(gs_filename) == false) {
+      httplib.printc("%s: not exists", gs_filename)
+      continue  
+    }
+    
+    var gs_uri = get_gs_uri(GS_BUCKET_NAME, gs_filename)       
 //    httplib.printc("uri_to_gs(): %s", gs_uri)    
 
     var name = sst_longrunningrecognize(gs_uri).name

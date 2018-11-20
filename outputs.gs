@@ -1,3 +1,230 @@
+/*
+{  
+   resource=   {  
+      generation=1542710544659782,
+      metageneration=1,
+      kind=storage#object,
+      cacheControl=no-cache,
+      selfLink=https://www.googleapis.com/storage/v1/b/BUCKETNAME-CS/o/20180425_1325_0080.flac,
+      mediaLink=https://www.googleapis.com/download/storage/v1/b/BUCKETNAME-CS/o/20180425_1325_0080.flac?generation=1542710544659782&alt=media,
+      bucket=BUCKETNAME-CS,
+      storageClass=REGIONAL,
+      size=16864699,
+      md5Hash=iAAgccQ6bsnjSxMF7C9HYA==,
+      crc32c=/dXzAQ==,
+      timeStorageClassUpdated=2018-11-20T10:42:24.659      Z,
+      name=20180425_1325_0080.flac,
+      contentDisposition=attachment; filename="20180425_1325_0080.flac",
+      timeCreated=2018-11-20T10:42:24.659      Z,
+      etag=CMbqhdDk4t4CEAE=,
+      id=BUCKETNAME-CS/20180425_1325_0080.flac/1542710544659782,
+      contentType=audio/flac,
+      updated=2018-11-20T10:42:24.659      Z
+   },
+   kind=storage#rewriteResponse,
+   objectSize=16864699,
+   totalBytesRewritten=16864699,
+   done=true
+}
+
+*/
+
+/*
+{  
+   generation=1542626966220983,
+   metageneration=1,
+   kind=storage#object,
+   cacheControl=no-cache,
+   selfLink=https://www.googleapis.com/storage/v1/b/BUCKETNAME-CS/o/www14.OC.com%2Fdl%2Fweb2%2Fdownload-file%2F6cac2715-14c7-430d-abeb-18b6b2c99930%2F20180425_1325_0080.flac,
+   mediaLink=https://www.googleapis.com/download/storage/v1/b/BUCKETNAME-CS/o/www14.OC.com%2Fdl%2Fweb2%2Fdownload-file%2F6cac2715-14c7-430d-abeb-18b6b2c99930%2F20180425_1325_0080.flac?generation=1542626966220983&alt=media,
+   bucket=BUCKETNAME-CS,
+   storageClass=REGIONAL,
+   size=16864699,
+   md5Hash=iAAgccQ6bsnjSxMF7C9HYA==,
+   crc32c=/dXzAQ==,
+   timeStorageClassUpdated=2018-11-19T11:29:26.220   Z,
+   name=www14.OC.com/dl/web2/download-file/6cac2715-14c7-430d-abeb-18b6b2c99930/20180425_1325_0080.flac,
+   contentDisposition=attachment; filename="20180425_1325_0080.flac",
+   timeCreated=2018-11-19T11:29:26.220   Z,
+   etag=CLfh3qKt4N4CEAE=,
+   id=BUCKETNAME-CS/www14.OC.com/dl/web2/download-file/6cac2715-14c7-430d-abeb-18b6b2c99930/20180425_1325_0080.flac/1542626966220983,
+   contentType=audio/flac,
+   updated=2018-11-19T11:29:26.220   Z
+}
+*/
+
+/*
+{  
+   generation=1542709040541528,
+   metageneration=1,
+   kind=storage#object,
+   selfLink=https://www.googleapis.com/storage/v1/b/BUCKETNAME-CS/o/20180425_1920_0059.flac,
+   mediaLink=https://www.googleapis.com/download/storage/v1/b/BUCKETNAME-CS/o/20180425_1920_0059.flac?generation=1542709040541528&alt=media,
+   bucket=BUCKETNAME-CS,
+   storageClass=REGIONAL,
+   size=7768840,
+   md5Hash=W9lSQkZCXsFtzjQc2m010g==,
+   crc32c=0UrROA==,
+   timeStorageClassUpdated=2018-11-20T10:17:20.541   Z,
+   name=20180425_1920_0059.flac,
+   timeCreated=2018-11-20T10:17:20.541   Z,
+   etag=CNje6YLf4t4CEAE=,
+   id=BUCKETNAME-CS/20180425_1920_0059.flac/1542709040541528,
+   contentType=audio/flac,
+   updated=2018-11-20T10:17:20.541   Z
+}
+
+
+*/
+
+/* polling_gst_work() success
+{  
+   operations=   [  
+      {  
+         metadata=         {  
+            counters=            {  
+               objectsFoundFromSource=2,
+               bytesCopiedToSink=3683988,
+               bytesFoundFromSource=3683988,
+               objectsCopiedToSink=2
+            },
+            @type=type.googleapis.com/google.storagetransfer.v1.TransferOperation,
+            name=transferOperations/transferJobs-12680207015371489254-1542632027802415,
+            transferSpec=            {  
+               gcsDataSink=               {  
+                  bucketName=BUCKETNAME-CS
+               },
+               objectConditions=               {  
+                  minTimeElapsedSinceLastModification=0s,
+                  maxTimeElapsedSinceLastModification=604800s
+               },
+               httpDataSource=               {  
+                  listUrl=gs://BUCKETNAME-CS/tsv.txt
+               },
+               transferOptions=               {  
+                  overwriteObjectsAlreadyExistingInSink=true
+               }
+            },
+            startTime=2018-11-19T12:54:00.138296955            Z,
+            endTime=2018-11-19T12:54:21.986677883            Z,
+            projectId=project-id-8464513615628612722,
+            transferJobName=transferJobs/12680207015371489254,
+            status=SUCCESS
+         },
+         response=         {  
+            @type=type.googleapis.com/google.protobuf.Empty
+         },
+         name=transferOperations/transferJobs-12680207015371489254-1542632027802415,
+         done=true
+      }
+   ]
+}
+
+
+*/
+
+/* polling_gst_work() failed
+{
+  "operations": [
+    {
+      "name": "transferOperations/transferJobs-7571803056877923151-1542630598202431",
+      "metadata": {
+        "@type": "type.googleapis.com/google.storagetransfer.v1.TransferOperation",
+        "name": "transferOperations/transferJobs-7571803056877923151-1542630598202431",
+        "projectId": "project-id-8464513615628612722",
+        "transferSpec": {
+          "httpDataSource": {
+            "listUrl": "gs://BUCKETNAME-CS/tsv.txt"
+          },
+          "gcsDataSink": {
+            "bucketName": "BUCKETNAME-CS"
+          },
+          "objectConditions": {
+            "minTimeElapsedSinceLastModification": "0s",
+            "maxTimeElapsedSinceLastModification": "604800s"
+          },
+          "transferOptions": {
+            "overwriteObjectsAlreadyExistingInSink": true
+          }
+        },
+        "startTime": "2018-11-19T12:30:00.137253075Z",
+        "endTime": "2018-11-19T12:30:21.712774025Z",
+        "status": "FAILED",
+        "counters": {
+          "objectsFoundFromSource": "2",
+          "bytesFoundFromSource": "17976274",
+          "objectsCopiedToSink": "1",
+          "bytesCopiedToSink": "1111575",
+          "objectsFromSourceFailed": "1",
+          "bytesFromSourceFailed": "16864699"
+        },
+        "errorBreakdowns": [
+          {
+            "errorCode": "NOT_FOUND",
+            "errorCount": "1",
+            "errorLogEntries": [
+              {
+                "url": "https://www14.OC.com/dl/web2/download-file/6cac2715-14c7-430d-abeb-18b6b2c99930/20180425_1325_0080.flac",
+                "errorDetails": [
+                  "[TRANSIENT FAILURE]: Server unable to initialize object upload.; Request headers: [GET /dl/web2/download-file/6cac2715-14c7-430d-abeb-18b6b2c99930/20180425_1325_0080.flac HTTP/1.1\r\nHost: www14.OC.com\r\nUser-Agent: Google CM\r\nRange: bytes=0-2097151\r\n\r\n].  Response headers: [HTTP/1.1 410 Gone\r\nServer: nginx\r\nContent-Type: application/json\r\nTransfer-Encoding: chunked\r\nConnection: keep-alive\r\nX-Powered-By: PHP/7.1.23\r\nCache-Control: no-cache, private\r\nX-Robots-Tag: noindex, nofollow, nosnippet, noarchive\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Expose-Headers: Cache-Control, Content-Encoding, Content-Range\r\nDate: Mon, 19 Nov 2018 12:30:16 GMT\r\n\r\n].  Response body: [{\"error_code\":107,\"message\":\"The file download has been disabled\"}]."
+                ]
+              }
+            ]
+          }
+        ],
+        "transferJobName": "transferJobs/7571803056877923151"
+      },
+      "done": true,
+      "response": {
+        "@type": "type.googleapis.com/google.protobuf.Empty"
+      }
+    }
+  ]
+}
+*/
+
+/* send_gst_works()
+ {
+  "name": "transferJobs/7571803056877923151",
+  "description": "20:29:57",
+  "projectId": "project-id-8464513615628612722",
+  "transferSpec": {
+    "httpDataSource": {
+      "listUrl": "gs://BUCKETNAME-CS/tsv.txt"
+    },
+    "gcsDataSink": {
+      "bucketName": "BUCKETNAME-CS"
+    },
+    "objectConditions": {
+      "minTimeElapsedSinceLastModification": "0s",
+      "maxTimeElapsedSinceLastModification": "604800s"
+    },
+    "transferOptions": {
+      "overwriteObjectsAlreadyExistingInSink": true
+    }
+  },
+  "schedule": {
+    "scheduleStartDate": {
+      "year": 2018,
+      "month": 11,
+      "day": 19
+    },
+    "scheduleEndDate": {
+      "year": 2018,
+      "month": 11,
+      "day": 19
+    },
+    "startTimeOfDay": {
+      "hours": 12,
+      "minutes": 30
+    }
+  },
+  "status": "ENABLED",
+  "creationTime": "2018-11-19T12:29:58.183421896Z",
+  "lastModificationTime": "2018-11-19T12:29:58.183421896Z"
+}
+*/
+
 /* get_key_status()
 [  
    {  
@@ -138,7 +365,7 @@
    ],
    "callback":"",
    "notify_status":false,
-   "server":"https://www14.online-convert.com/dl/web2",
+   "server":"https://www14.OC.com/dl/web2",
    "spent":0,
    "created_at":"2018-11-12T01:56:52",
    "modified_at":"2018-11-12T01:56:52"
@@ -257,7 +484,7 @@
                "21a28ce3-21e8-4339-a857-a4ee87f9c74f"
             ]
          },
-         "uri":"https://www7.online-convert.com/dl/web2/download-file/eea9c56a-77c7-4b4c-a305-299401c906e7/20181111_0830_0594.flac",
+         "uri":"https://www7.OC.com/dl/web2/download-file/eea9c56a-77c7-4b4c-a305-299401c906e7/20181111_0830_0594.flac",
          "size":279123,
          "status":"enabled",
          "content_type":"audio/flac",
@@ -273,7 +500,7 @@
                "91917cb2-d097-4fe5-bc20-ca67d435a9f2"
             ]
          },
-         "uri":"https://www7.online-convert.com/dl/web2/download-file/c32708dc-a205-4ba2-a4fd-43a7f2b2f9da/20181111_0848_0597.flac",
+         "uri":"https://www7.OC.com/dl/web2/download-file/c32708dc-a205-4ba2-a4fd-43a7f2b2f9da/20181111_0848_0597.flac",
          "size":535449,
          "status":"enabled",
          "content_type":"audio/flac",
@@ -289,7 +516,7 @@
                "21a28ce3-21e8-4339-a857-a4ee87f9c74f"
             ]
          },
-         "uri":"https://www7.online-convert.com/dl/web2/download-file/c8e6b30b-a94f-4d16-ad95-901c4e1ef303/20181111_0830_0594.mp3",
+         "uri":"https://www7.OC.com/dl/web2/download-file/c8e6b30b-a94f-4d16-ad95-901c4e1ef303/20181111_0830_0594.mp3",
          "size":21674,
          "status":"enabled",
          "content_type":"audio/mp3",
@@ -305,7 +532,7 @@
                "91917cb2-d097-4fe5-bc20-ca67d435a9f2"
             ]
          },
-         "uri":"https://www7.online-convert.com/dl/web2/download-file/5d7af7d6-7930-486e-9327-dbadff5e01bc/20181111_0848_0597.mp3",
+         "uri":"https://www7.OC.com/dl/web2/download-file/5d7af7d6-7930-486e-9327-dbadff5e01bc/20181111_0848_0597.mp3",
          "size":39542,
          "status":"enabled",
          "content_type":"audio/mp3",
@@ -316,7 +543,7 @@
    ],
    "callback":"",
    "notify_status":false,
-   "server":"https://www7.online-convert.com/dl/web2",
+   "server":"https://www7.OC.com/dl/web2",
    "spent":2,
    "created_at":"2018-11-12T01:52:46",
    "modified_at":"2018-11-12T01:52:48"

@@ -151,10 +151,11 @@ function batch_works(files) {
   
   try {
     var occ_outputs = occ_works(ids)
-    httplib.printc("%s", JSON.stringify(occ_outputs))
-    
-    var lines = stt_works(occ_outputs)
-    httplib.printc(lines)
+//    httplib.printc("%s", occ_outputs)
+    var gst = gst_works(occ_outputs)
+//    httplib.printc("%s", gst)
+//    var lines = stt_works(occ_outputs)
+    var lines = stt_works_gst(occ_outputs)
   } finally {
     remove_mp3s_no_desc()
   }
