@@ -112,10 +112,12 @@ function batch_works() {
     var hours = Math.round((new Date()).getHours())
     
     switch(hours % 24) {
+      case 0:
       case 1:
         batch_works_halfdone()
         break
       case 2:
+      case 3:
         batch_works_oversized()
         break
       default:

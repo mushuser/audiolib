@@ -1,7 +1,6 @@
 var GS_BASE_URL = "https://www.googleapis.com/storage/v1"
 var GS_UPLOAD_URL = "https://www.googleapis.com/upload/storage/v1"
 var GST_BASE_URL = "https://storagetransfer.googleapis.com/v1"
-var GS_OBJECT_KIND = "storage#object"
 
 var GS_BUCKET_NAME = secret.gs_bucket_name
 var GS_PROJECT_ID = secret.gs_project_id
@@ -79,6 +78,7 @@ function gs_upload(uri) {
   var r = httplib.httpretry(uri)
   var bytes = r.getBlob().getBytes()
   
+  // default to public read
   var j = gs_upload_binary(bytes, filename)
   return j
 }
