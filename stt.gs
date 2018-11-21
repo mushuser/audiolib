@@ -37,7 +37,7 @@ function remove_mp3s_no_desc() {
   return rm_files
 }
 
-
+// obsoleted
 function stt_works(occ_outputs) {
   var result_lines = []
   
@@ -85,11 +85,12 @@ function stt_works(occ_outputs) {
 function stt_works_gst(occ_outputs) {
   var result_lines = []
   
-  httplib.printc("STT_VERSION: %s", STT_VERSION)
+  httplib.printc("stt_works_gst(): %s", STT_VERSION)
   
   for(var i in occ_outputs) {
     var occ_output = occ_outputs[i]
     
+    // file uploaded in gst_works()
     var uri = occ_output.uri
     var gs_filename = get_filename(uri)
     
