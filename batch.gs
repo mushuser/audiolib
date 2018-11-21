@@ -77,12 +77,7 @@ function get_batch_files(folder_id, max) {
 //    httplib.printc("%s: %s %d %s", filename, id, size, desc)
     
     var mainname = get_mainname(filename)
-    
-    if(size > OCC_MAX_SIZE) {
-      move_oversized(file)
-      continue
-    }
-    
+        
     // if done
     if((mp3_mainnames.indexOf(mainname) > -1) && has_desc(desc)) {
       if(folder_id != secret.completed_folder_id) { 
@@ -92,7 +87,6 @@ function get_batch_files(folder_id, max) {
     }
     
     // if not done, goes here
-
     // oversized    
     if(folder_id == secret.oversized_folder_id) {
       if(file.isStarred() == false) {
@@ -100,6 +94,11 @@ function get_batch_files(folder_id, max) {
         result_files.push(file)
       }
       continue
+    } else {
+      if(size > OCC_MAX_SIZE) {
+        move_oversized(file)
+        continue
+      }
     }
     
     result_files.push(file)
@@ -209,7 +208,6 @@ function move_completed(file_or_id) {
 
 
 function move_oversized(file_or_id) {
-  httplib.printc("move_oversized(): %s", file_or_id)
   if(typeof(file_or_id) == "object") {
     var file = file_or_id
   } else {
