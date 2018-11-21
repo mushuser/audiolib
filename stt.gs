@@ -56,7 +56,6 @@ function stt_works_gst(occ_outputs) {
     }
     
     var gs_uri = get_gs_uri(GS_BUCKET_NAME, gs_filename)       
-    httplib.printc("stt_works_gst(): %s", gs_uri)    
 
     var name = sst_longrunningrecognize(gs_uri).name
     var stt = polling_stt_work(name)
