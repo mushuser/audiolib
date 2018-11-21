@@ -3,7 +3,7 @@ var MAX_DAILY = 30
 var OCC_BASE_URL = "https://api2.online-convert.com"
 var DEFAULT_TARGETS = ["flac", "mp3"]
 var DEFAULT_FREQ = 44100
-var OCC_MAX_SIZE = 100*1024*1024 // 100M
+var OCC_MAX_SIZE = 6*1024*1024 // 100M
 
 
 var headers = {
