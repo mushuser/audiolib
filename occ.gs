@@ -122,9 +122,13 @@ function polling_occ_work(job_id) {
       return_outputs = inject_mp3_drive_id(return_outputs, id_to_mp3s)
         
       return return_outputs
-    } else {
-      httplib.printc("polling_occ_work(): %s", code)
-    }
+    } 
+    
+    var duration_s = Math.round((new Date() - g_now)/1000)
+    
+    if((duration_s % 5) == 0) {
+      httplib.printc("polling_occ_work(): waiting")
+    }    
   }  
 }
 
@@ -245,7 +249,7 @@ function get_minutes(output) {
 
 
 function get_key_status(key) {
-  var date_str = Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd")
+  var date_str = Utilities.formatDate(new Date(), "UTC", "yyyy-MM-dd")
   var url = OCC_BASE_URL + "/stats/day/" + date_str + "/single"
   
   headers["X-Oc-Api-Key"] = key

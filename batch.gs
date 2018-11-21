@@ -64,6 +64,7 @@ function get_batch_files(folder_id, max) {
     }
     
     var file = files.next()
+    var id = file.getId()
     var desc = file.getDescription()
     var size = file.getSize()
     var filename = file.getName()
@@ -72,6 +73,8 @@ function get_batch_files(folder_id, max) {
     if(ext != "wma") {
       continue  
     }
+    
+    httplib.printc("%s: %s %d %s", filename, id, size, desc)
     
     var mainname = get_mainname(filename)
     
@@ -151,7 +154,7 @@ function batch_works(files) {
   
   try {
     var occ_outputs = occ_works(ids)
-//    httplib.printc("%s", occ_outputs)
+    httplib.printc("%s", JSON.stringify(occ_outputs))
     var gst = gst_works(occ_outputs)
 //    httplib.printc("%s", gst)
 //    var lines = stt_works(occ_outputs)
@@ -190,6 +193,7 @@ function move_completed(file_or_id) {
 
 
 function move_oversized(file_or_id) {
+  httplib.printc("move_oversized(): %s", file_or_id)
   if(typeof(file_or_id) == "object") {
     var file = file_or_id
   } else {

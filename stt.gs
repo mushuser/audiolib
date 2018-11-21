@@ -55,7 +55,10 @@ function stt_works(occ_outputs) {
 
     var name = sst_longrunningrecognize(gs_uri).name
     var stt = polling_stt_work(name)
-//    httplib.printc("stt_works(): %s", JSON.stringify(stt))    
+    if(stt == undefined) {
+      httplib.printc("polling_stt_work(): reached max compute time")    
+      return undefined
+    }
     
     var line = get_line(stt)
     result_lines.push(line)
@@ -96,7 +99,7 @@ function stt_works_gst(occ_outputs) {
     }
     
     var gs_uri = get_gs_uri(GS_BUCKET_NAME, gs_filename)       
-//    httplib.printc("uri_to_gs(): %s", gs_uri)    
+    httplib.printc("stt_works_gst(): %s", gs_uri)    
 
     var name = sst_longrunningrecognize(gs_uri).name
     var stt = polling_stt_work(name)
@@ -128,6 +131,8 @@ function stt_works_gst(occ_outputs) {
 
 
 function polling_stt_work(name) { 
+  var start_time = new Date()
+  
   while(true) {
     Utilities.sleep(2*1000) 
     
@@ -137,7 +142,17 @@ function polling_stt_work(name) {
       var results = status.response.results
       
       return results
-    } 
+    }
+    
+    var duration_s = Math.round((new Date() - g_now)/1000)
+    
+    if((duration_s % 20) == 0) {
+      httplib.printc("polling_stt_work(): waiting")
+    }
+    
+    if(duration_s > MAX_COMPUTE_TIME) {
+      return undefined  
+    }
   }  
 }
 

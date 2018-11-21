@@ -6,6 +6,8 @@ var GS_OBJECT_KIND = "storage#object"
 var GS_BUCKET_NAME = secret.gs_bucket_name
 var GS_PROJECT_ID = secret.gs_project_id
 
+var g_now = new Date()
+
 function get_mime(filename) {
   var ext = filename.match(/([^\.]+$)/g)[0]
   
@@ -46,7 +48,8 @@ function get_filename(uri) {
 
 
 function gs_upload_binary(body, filename, mime) {
-  var gs_uri = GS_UPLOAD_URL + "/b/" + GS_BUCKET_NAME + "/o?uploadType=media&name=" + filename
+  var parameters = "/o?uploadType=media&predefinedAcl=publicRead&name=" + filename
+  var gs_uri = GS_UPLOAD_URL + "/b/" + GS_BUCKET_NAME + parameters
 
   var headers = {
     "Authorization":authlib.get_g_bearerauth()
@@ -151,9 +154,9 @@ function get_scheduled_time(delta_seconds) {
 
 function get_scheduled_date() {
   var now = new Date()
-  var year = now.getFullYear()
-  var month = now.getMonth()+1
-  var day = now.getDate()
+  var year = now.getUTCFullYear()
+  var month = now.getUTCMonth()+1
+  var day = now.getUTCDate()
   
   var r = {
     year:year,
@@ -356,11 +359,14 @@ function send_gst_works(outputs) {
 }
 
 
+var MAX_COMPUTE_TIME = 6 * 60 - 30
+
 function polling_gst_work(name) {
   var filter = {"job_names":[name], "project_id":GS_PROJECT_ID}
   var filter_encoded = encodeURIComponent(JSON.stringify(filter))
   var url = Utilities.formatString("%s/transferOperations?filter=%s", GST_BASE_URL, filter_encoded)
-  
+  var start_time = new Date()
+    
   while(true) {
     var t = httplib.httpretry(url, get_gs_options("GET"))
     var j = JSON.parse(t)
@@ -370,11 +376,18 @@ function polling_gst_work(name) {
       if(done) {
         return j
       }
-    } else {
-      httplib.printc("polling_gst_work(): waiting")
-      Utilities.sleep(5*1000) 
-      continue  
     }
+    
+    Utilities.sleep(2*1000) 
+    var duration_s = Math.round((new Date() - g_now)/1000)
+    
+    if((duration_s % 10) == 0) {
+      httplib.printc("polling_gst_work(): waiting")
+    }
+    
+    if(duration_s > MAX_COMPUTE_TIME) {
+      return undefined  
+    }    
   }
 }
 
