@@ -74,7 +74,7 @@ function get_batch_files(folder_id, max) {
       continue  
     }
     
-    httplib.printc("%s: %s %d %s", filename, id, size, desc)
+//    httplib.printc("%s: %s %d %s", filename, id, size, desc)
     
     var mainname = get_mainname(filename)
     
