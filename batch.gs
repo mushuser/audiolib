@@ -111,40 +111,38 @@ function get_batch_files(folder_id, max) {
 function batch_works() {
     var hours = Math.round((new Date()).getHours())
     
-    switch(hours % 3) {
-      case 0:
-        batch_works_wma()
-        break
+    switch(hours % 24) {
       case 1:
-        batch_works_wma_completed()
+        batch_works_halfdone()
         break
       case 2:
-        batch_works_wma_oversized()
+        batch_works_oversized()
         break
       default:
-        break
+        batch_works_regular()        
     }
 }
 
 
 // for those wma in completed folder, but not in mp3 folder
-function batch_works_wma_completed() {
+function batch_works_halfdone() {
   var files = get_batch_files(secret.completed_folder_id, batch_numbers)
   httplib.printc("batch_works_halfdone()")
-  batch_works(files)  
+  batch_works_regular(files)  
 }
 
 
-function batch_works_wma_oversized() {
+function batch_works_oversized() {
   var files = get_batch_files(secret.oversized_folder_id, 1)
   httplib.printc("batch_works_oversized()")
-  batch_works(files)  
+  batch_works_regular(files)  
 }
 
 // run by trigger
 // {"year":2018,"month":11,"day-of-month":14,"day-of-week":3,"week-of-year":46,"hour":1,"minute":3,"second":33,"timezone":"UTC","authMode":{},"triggerUid":"65417"}
-function batch_works_wma(files) {
+function batch_works_regular(files) {
   if((files == undefined) || files.hasOwnProperty("year")) {
+    httplib.printc("batch_works_regular()")
     var files = get_batch_files(secret.source_folder_id, batch_numbers)
   }
   
