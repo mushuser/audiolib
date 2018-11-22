@@ -2,7 +2,7 @@ var GS_BASE_URL = "https://www.googleapis.com/storage/v1"
 var GS_UPLOAD_URL = "https://www.googleapis.com/upload/storage/v1"
 var GST_BASE_URL = "https://storagetransfer.googleapis.com/v1"
 
-var GS_TSV_NAME = "tsv.txt"
+var GS_TSV_NAME = "tsv_"
 var GS_BUCKET_NAME = secret.gs_bucket_name
 var GS_PROJECT_ID = secret.gs_project_id
 
@@ -225,8 +225,7 @@ function get_tsv(uri, size, md5) {
 function gst_works(outputs) {  
   var gst = send_gst_works(outputs)
   httplib.printc("send_gst_works(): %s", JSON.stringify(gst))
-  var name = gst.name
-  var polling = polling_gst_work(name)
+  var polling = polling_gst_work(gst)
   httplib.printc("polling_gst_work(): %s", JSON.stringify(polling))
   gs_move_files_root()
   
@@ -318,8 +317,8 @@ function gs_copy_to_root(src) {
 function send_gst_works(outputs) {
   var tsv = get_tsv_fr_output(outputs)
   httplib.printc("%s", tsv)
-  
-  var gs = gs_upload_binary(tsv, GS_TSV_NAME, "text/plain")
+  var tsv_filename = GS_TSV_NAME + get_random_id()
+  var gs = gs_upload_binary(tsv, tsv_filename, "text/plain")
   var listUrl = get_gs_uri(gs.bucket, gs.name)
   var url = GST_BASE_URL + "/" + "transferJobs"
     
@@ -359,6 +358,7 @@ function send_gst_works(outputs) {
 
   var t = httplib.httpretry(url, get_gs_options("POST", payload))
   var j = JSON.parse(t)
+  j.tsv = tsv_filename
 
   return j
 }
@@ -366,7 +366,8 @@ function send_gst_works(outputs) {
 
 var MAX_COMPUTE_TIME = 6 * 60 - 30
 
-function polling_gst_work(name) {
+function polling_gst_work(gst) {
+  var name = gst.name
   var filter = {"job_names":[name], "project_id":GS_PROJECT_ID}
   var filter_encoded = encodeURIComponent(JSON.stringify(filter))
   var url = Utilities.formatString("%s/transferOperations?filter=%s", GST_BASE_URL, filter_encoded)
@@ -379,7 +380,7 @@ function polling_gst_work(name) {
     if(j.hasOwnProperty("operations")) {      
       var done = j.operations[0].done  
       if(done) {
-        remove_gs(GS_TSV_NAME)
+//        remove_gs(gst.tsv)
         return j
       }
     }
@@ -468,4 +469,15 @@ function check_file_exist(name) {
   } else {
     return true 
   }
+}
+
+
+function get_random_id() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 6; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
 }
