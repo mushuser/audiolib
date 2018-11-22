@@ -2,6 +2,7 @@ var GS_BASE_URL = "https://www.googleapis.com/storage/v1"
 var GS_UPLOAD_URL = "https://www.googleapis.com/upload/storage/v1"
 var GST_BASE_URL = "https://storagetransfer.googleapis.com/v1"
 
+var GS_TSV_NAME = "tsv.txt"
 var GS_BUCKET_NAME = secret.gs_bucket_name
 var GS_PROJECT_ID = secret.gs_project_id
 
@@ -314,7 +315,7 @@ function gs_copy_to_root(src) {
 
 function send_gst_works(outputs) {
   var tsv = get_tsv_fr_output(outputs)
-  var gs = gs_upload_binary(tsv, "tsv.txt", "text/plain")
+  var gs = gs_upload_binary(tsv, GS_TSV_NAME, "text/plain")
   var listUrl = get_gs_uri(gs.bucket, gs.name)
   var url = GST_BASE_URL + "/" + "transferJobs"
     
@@ -374,6 +375,7 @@ function polling_gst_work(name) {
     if(j.hasOwnProperty("operations")) {      
       var done = j.operations[0].done  
       if(done) {
+        remove_gs(GS_TSV_NAME)
         return j
       }
     }
