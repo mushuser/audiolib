@@ -244,6 +244,7 @@ function is_occ_file(filename) {
   return test
 }
 
+
 function gs_move_files_root() {
   var url = Utilities.formatString("%s/b/%s/o", GS_BASE_URL, GS_BUCKET_NAME)
   var t = httplib.httpretry(url, get_gs_options("GET"))
@@ -255,7 +256,8 @@ function gs_move_files_root() {
     if(is_occ_file(name)) {
       gs_copy_to_root(name)
       gs_delete(name)
-      httplib.printc("moved to root: %s", name)
+      var filename = get_filename(name)
+      httplib.printc("moved to root: %s", filename)
     }   
   }
 }
@@ -315,6 +317,8 @@ function gs_copy_to_root(src) {
 
 function send_gst_works(outputs) {
   var tsv = get_tsv_fr_output(outputs)
+  httplib.printc("%s", tsv)
+  
   var gs = gs_upload_binary(tsv, GS_TSV_NAME, "text/plain")
   var listUrl = get_gs_uri(gs.bucket, gs.name)
   var url = GST_BASE_URL + "/" + "transferJobs"
