@@ -143,12 +143,12 @@ function batch_works_oversized() {
 // {"year":2018,"month":11,"day-of-month":14,"day-of-week":3,"week-of-year":46,"hour":1,"minute":3,"second":33,"timezone":"UTC","authMode":{},"triggerUid":"65417"}
 function batch_works_regular(files) {
   if((files == undefined) || files.hasOwnProperty("year")) {
-    httplib.printc("batch_works_regular()")
+//    httplib.printc("batch_works_regular()")
     var files = get_batch_files(secret.source_folder_id, batch_numbers)
   }
   
   if(files.length < 1) {
-    httplib.printc("batch_works(): no files to do")    
+//    httplib.printc("batch_works(): no files to do")    
     return
   }
 
