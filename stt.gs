@@ -2,6 +2,7 @@ var STT_VERSION = "v1p1beta1" // v1p1beta1 or v1
 var STT_BASE_URL = "https://speech.googleapis.com/" + STT_VERSION
 var STT_MAX_SIZE = 51000*60*60 // flac 51000bytes/second, 60minutes for 175M
 var STT_MEMORY_SIZE = 10 * 1024 * 1024
+var STT_NO_DESC = "(無STT內容)"
 
 function remove_mp3s_no_desc() {
   var folder = DriveApp.getFolderById(secret.mp3_folder_id)
@@ -193,7 +194,7 @@ function get_line(results) {
   }
   
   if(lines.length == 0) {
-    lines = "(無STT內容)"  
+    lines = STT_NO_DESC  
   }
   
   return lines
