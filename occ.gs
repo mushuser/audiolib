@@ -88,6 +88,9 @@ function polling_occ_work(job_id) {
       
       for(var i in outputs) {
         var output = outputs[i]
+        var created_at = output.created_at
+        var datestr = created_at.match(/(\d{4}-\d{2}-\d{2})/)[1]
+        output.datestr = datestr
         var filename = get_filename(output.uri)
         var type = output.content_type
         

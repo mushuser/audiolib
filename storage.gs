@@ -317,7 +317,8 @@ function gs_copy_to_root(src) {
 function send_gst_works(outputs) {
   var tsv = get_tsv_fr_output(outputs)
   httplib.printc("%s", tsv)
-  var tsv_filename = GS_TSV_NAME + get_random_id()
+  var timestr = Utilities.formatDate(new Date(), "GMT+8", "HH-mm-ss")
+  var tsv_filename = GS_TSV_NAME + timestr
   var gs = gs_upload_binary(tsv, tsv_filename, "text/plain")
   var listUrl = get_gs_uri(gs.bucket, gs.name)
   var url = GST_BASE_URL + "/" + "transferJobs"

@@ -128,14 +128,14 @@ function batch_works() {
 // for those wma in completed folder, but not in mp3 folder
 function batch_works_halfdone() {
   var files = get_batch_files(secret.completed_folder_id, batch_numbers)
-  httplib.printc("batch_works_halfdone()")
+//  httplib.printc("batch_works_halfdone()")
   batch_works_regular(files)  
 }
 
 
 function batch_works_oversized() {
   var files = get_batch_files(secret.oversized_folder_id, 1)
-  httplib.printc("batch_works_oversized()")
+//  httplib.printc("batch_works_oversized()")
   batch_works_regular(files)  
 }
 
